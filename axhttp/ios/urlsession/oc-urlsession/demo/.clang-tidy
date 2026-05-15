@@ -1,0 +1,3 @@
+---
+Checks:          '-*,bugprone-*,-bugprone-easily-swappable-parameters,-bugprone-narrowing-conversions,-bugprone-reserved-identifier,clang-analyzer-*,-clang-analyzer-nullability.NullablePassedToNonnull,-clang-analyzer-optin.cplusplus.VirtualCall,-clang-analyzer-osx.API_NSAvailability,-clang-analyzer-optin.osx.cocoa.localizability.NonLocalizedStringChecker,clang-diagnostic-*,-clang-diagnostic-pragma-once-outside-header,-clang-diagnostic-unguarded-availability-new,misc-*,-misc-no-recursion,-misc-non-private-member-variables-in-classes,-misc-static-assert,-misc-use-anonymous-namespace,-misc-unconventional-assign-operator,-misc-include-cleaner,-misc-const-correctness'
+...

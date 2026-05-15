@@ -1,8 +1,8 @@
-# AgentSDK Quickstarts
+# SDK Quickstarts
 
-本仓库收录 AgentSDK 在不同平台、语言和网络栈下的可运行接入 Demo。选择最贴近你应用的 Demo，进入对应目录按其 README 操作即可。
+本仓库收录 SDK 在不同平台、语言和网络栈下的可运行接入 Demo。选择最贴近你应用的 Demo，进入对应目录按其 README 操作即可。
 
-架构、初始化、DNS、排障等内容请参阅专属文档：[`sgentsdk/docs/`](https://axisnow.github.io/agentsdk-docs/)。
+更多内容请参阅[`文档`](https://axisnow.github.io/sdk-docs/)。
 
 ## Demo 列表
 

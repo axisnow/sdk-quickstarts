@@ -1,0 +1,3 @@
+# Embedded frameworks (build-time, see README.md)
+/Frameworks/*
+!/Frameworks/.gitkeep
