@@ -9,7 +9,6 @@
 // #import <AXSecurity/axsecurity.h>
 
 @interface ViewController ()
-// @property(nonatomic, strong) AXService *axservice;
 @property(nonatomic, strong) UILabel *log;
 @property(nonatomic, strong) UIButton *button;
 @end
@@ -50,9 +49,9 @@
       int requestPort = 7000;
 
       // TODO: Use AXService to get local proxy address (see README.md)
-      // AXLocalProxy localProxy;
-      // int res = [self.axservice getLocalTCPProxy:&localProxy host:requestHost port:requestPort];
-      // requestHost = [NSString stringWithFormat:@"%s", localProxy.ip];
+      // AXLocalProxy *localProxy = [AXService getLocalTCPProxy:requestHost port:requestPort];
+      // if (localProxy == nil) { return; }
+      // requestHost = localProxy.ip;
       // requestPort = localProxy.port;
 
       struct addrinfo hints, *pinfo;

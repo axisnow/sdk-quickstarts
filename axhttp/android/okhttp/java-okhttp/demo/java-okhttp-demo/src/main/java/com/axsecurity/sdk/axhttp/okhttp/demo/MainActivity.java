@@ -35,10 +35,10 @@ public class MainActivity extends AppCompatActivity {
             OkHttpClientBuilder.readTimeout(60, TimeUnit.SECONDS);
             OkHttpClientBuilder.writeTimeout(60, TimeUnit.SECONDS);
 
-            // *** COMMENT THE LINE BELOW FOR AgentSDK ***
+            // *** COMMENT THE LINE BELOW FOR SDK ***
             OkHttpClient client = OkHttpClientBuilder.build();
 
-            // *** UNCOMMENT THE LINE BELOW FOR AgentSDK ***
+            // *** UNCOMMENT THE LINE BELOW FOR SDK ***
             // AXHTTPService.setOkHttpClientBuilder(OkHttpClientBuilder);
             // OkHttpClient client = AXHTTPService.getOkHttpClient();
 

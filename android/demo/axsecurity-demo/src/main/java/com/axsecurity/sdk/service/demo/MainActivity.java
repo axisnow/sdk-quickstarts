@@ -8,9 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-// *** UNCOMMENT THE LINES BELOW FOR AgentSDK ***
+// *** UNCOMMENT THE LINES BELOW FOR SDK ***
 // import com.axsecurity.sdk.service.AXService;
-// import com.axsecurity.sdk.service.LocalProxy;
+// import com.axsecurity.sdk.service.AXLocalProxy;
 // import java.net.HttpURLConnection;
 // import java.net.InetSocketAddress;
 // import java.net.Proxy;
@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private final String mRequestHost = "your.server.domain"; // your server domain
     private final int mRequestPort = 7000; // your server port
 
-    // *** UNCOMMENT THE LINE BELOW FOR AgentSDK ***
+    // *** UNCOMMENT THE LINE BELOW FOR SDK ***
     // private final String mDemoURL = "https://your.server.domain/"; // target URL for HTTP/Socks5 proxy demo
 
     @SuppressLint("SetTextI18n")
@@ -39,19 +39,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // *** UNCOMMENT THE LINES BELOW FOR AgentSDK ***
+        // *** UNCOMMENT THE LINES BELOW FOR SDK ***
         // m_textView = findViewById(R.id.log);
         // m_textView.setText("Init " + (MyApplication.s_initResult ? "OK" : "FAILED"));
 
         Button proxyBtn = findViewById(R.id.proxy);
         proxyBtn.setOnClickListener((View view) -> {
 
-            // *** UNCOMMENT THE LINES BELOW FOR AgentSDK ***
+            // *** UNCOMMENT THE LINES BELOW FOR SDK ***
             // new Thread(() -> {
-            //     LocalProxy localProxy = AXService.getLocalTCPProxy(mRequestHost, mRequestPort);
+            //     AXLocalProxy localProxy = AXService.getLocalTCPProxy(mRequestHost, mRequestPort);
             //     String result;
             //     if (localProxy != null) {
-            //         result = "LocalProxy: " + localProxy.getServerIp() + ":" + localProxy.getServerPort();
+            //         result = "AXLocalProxy: " + localProxy.getIp() + ":" + localProxy.getPort();
             //     } else {
             //         result = "GetLocalTCPProxy failed (returned null)";
             //     }
@@ -65,15 +65,15 @@ public class MainActivity extends AppCompatActivity {
             new Thread(() -> {
                 String message;
                 try {
-                    // *** UNCOMMENT THE LINES BELOW FOR AgentSDK ***
-                    // LocalProxy localProxy = AXService.getLocalTCPProxy(mRequestHost, mRequestPort);
+                    // *** UNCOMMENT THE LINES BELOW FOR SDK ***
+                    // AXLocalProxy localProxy = AXService.getLocalTCPProxy(mRequestHost, mRequestPort);
                     // if (localProxy == null) {
                     //     runOnUiThread(() -> m_textView.setText("GetLocalTCPProxy failed\n"));
                     //     return;
                     // }
-                    // Socket socket = new Socket(localProxy.getServerIp(), localProxy.getServerPort());
+                    // Socket socket = new Socket(localProxy.getIp(), localProxy.getPort());
 
-                    // *** COMMENT THE LINE BELOW FOR AgentSDK ***
+                    // *** COMMENT THE LINE BELOW FOR SDK ***
                     Socket socket = new Socket(mRequestHost, mRequestPort);
 
                     PrintWriter out = new PrintWriter(
@@ -96,22 +96,22 @@ public class MainActivity extends AppCompatActivity {
 
         Button httpReqBtn = findViewById(R.id.http_request);
         httpReqBtn.setOnClickListener((View view) -> {
-            // *** UNCOMMENT THE LINES BELOW FOR AgentSDK ***
+            // *** UNCOMMENT THE LINES BELOW FOR SDK ***
             // new Thread(() -> runProxyRequest(Proxy.Type.HTTP)).start();
         });
 
         Button socks5ReqBtn = findViewById(R.id.socks5_request);
         socks5ReqBtn.setOnClickListener((View view) -> {
-            // *** UNCOMMENT THE LINES BELOW FOR AgentSDK ***
+            // *** UNCOMMENT THE LINES BELOW FOR SDK ***
             // new Thread(() -> runProxyRequest(Proxy.Type.SOCKS)).start();
         });
     }
 
-    // *** UNCOMMENT THE METHOD BELOW FOR AgentSDK ***
+    // *** UNCOMMENT THE METHOD BELOW FOR SDK ***
     // @SuppressLint("SetTextI18n")
     // private void runProxyRequest(Proxy.Type type) {
     //     String tag = (type == Proxy.Type.HTTP) ? "HTTP" : "SOCKS5";
-    //     LocalProxy lp = (type == Proxy.Type.HTTP)
+    //     AXLocalProxy lp = (type == Proxy.Type.HTTP)
     //             ? AXService.getLocalHTTPProxy()
     //             : AXService.getLocalSocks5Proxy();
     //     if (lp == null) {
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
     //     HttpURLConnection conn = null;
     //     try {
     //         Proxy javaProxy = new Proxy(type,
-    //                 new InetSocketAddress(lp.getServerIp(), lp.getServerPort()));
+    //                 new InetSocketAddress(lp.getIp(), lp.getPort()));
     //         conn = (HttpURLConnection) new URL(mDemoURL).openConnection(javaProxy);
     //         conn.setRequestMethod("GET");
     //         conn.setConnectTimeout(10_000);
@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
     //     }
     //
     //     String finalResult = result;
-    //     runOnUiThread(() -> m_textView.setText(tag + " via " + lp.getServerIp() + ":"
-    //             + lp.getServerPort() + " -> " + finalResult + "\n"));
+    //     runOnUiThread(() -> m_textView.setText(tag + " via " + lp.getIp() + ":"
+    //             + lp.getPort() + " -> " + finalResult + "\n"));
     // }
 }

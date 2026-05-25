@@ -35,10 +35,10 @@ class MainActivity : ComponentActivity() {
     }
 
     fun onRequestApi() {
-        // *** COMMENT THE LINE BELOW FOR AgentSDK ***
+        // *** COMMENT THE LINE BELOW FOR SDK ***
         val client = OkHttpClient.Builder().build()
 
-        // *** UNCOMMENT THE LINE BELOW FOR AgentSDK ***
+        // *** UNCOMMENT THE LINE BELOW FOR SDK ***
         // val okBuilder = OkHttpClient.Builder()
         // okBuilder.callTimeout(30, TimeUnit.SECONDS)
         // AXHTTPService.setOkHttpClientBuilder(okBuilder)

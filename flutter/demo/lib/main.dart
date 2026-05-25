@@ -80,16 +80,16 @@ class _MyAppState extends State<MyApp> {
 
   ///初始化
   _init() async {
-    // *** COMMENT THE LINE BELOW FOR AgentSDK***//
-    var accessKeyID = 'your accessKeyID from SDK Deployment';
+    // *** COMMENT THE LINE BELOW FOR SDK***//
+    var accessKeyId = 'your accessKeyId from SDK Deployment';
     var accessKeySecret = 'your accessKeySecret from SDK Deployment';
-    var edgeAddresses = ['edge IP'];
+    var edgeNodes = ['edge IP'];
 
-    Config cfg = Config(
-        accessKeyID: accessKeyID,
+    AxConfig cfg = AxConfig(
+        accessKeyId: accessKeyId,
         accessKeySecret: accessKeySecret,
-        edgeAddresses: edgeAddresses,
-        dns: DnsConfig(edgeDohResolveDomains: ["*.example.com"]),
+        edgeNodes: edgeNodes,
+        dns: AxDnsConfig(edgeDohResolveDomains: ["*.example.com"]),
         secureProxyEnabled: true);
 
     var result = await AxService.initialize(config: cfg);

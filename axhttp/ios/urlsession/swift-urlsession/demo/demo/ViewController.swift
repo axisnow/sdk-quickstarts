@@ -45,13 +45,13 @@ class ViewController: UIViewController {
     @IBAction func buttonTapped(_ sender: UIButton) {
         var outputText = ""
 
-        // *** UNCOMMENT THE LINE BELOW FOR AXHTTP***
+        // *** UNCOMMENT THE LINES BELOW FOR AXHTTP***
         /*
          let config = AXConfig()
-         config.accessKeyId = ""
+         config.accessKeyID = ""
          config.accessKeySecret = ""
-         config.edgeAddresses = [""]
-         let result = AXURLSessionService.initialize(with: config)
+         config.edgeNodes = [""]
+         let result = AXService.initialize(config)
          if (result == 0) {
            outputText = "初始化成功"
          } else {

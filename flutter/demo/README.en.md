@@ -1,14 +1,14 @@
-# AgentSDK Quickstart: Flutter HTTP Client
+# SDK Quickstart: Flutter HTTP Client
 
 English | [简体中文](./README.md)
 
 This quickstart is written specifically for Android and iOS apps that are implemented using [`Flutter`](https://flutter.dev/) and the [`HTTP Client`](https://pub.dev/documentation/http/latest/http/Client-class.html), the [`Dart IO HttpClient`](https://api.dart.dev/stable/2.16.2/dart-io/HttpClient-class.html) or [`Dio`](https://pub.dev/packages/dio). If this is not your situation then please check if there is a more relevant quickstart guide available.
 
-This page provides all the steps for integrating AgentSDK into your app. Additionally, a step-by-step tutorial guide using our App Example is also available.
+This page provides all the steps for integrating SDK into your app. Additionally, a step-by-step tutorial guide using our App Example is also available.
 
-## Adding AgentSDK Service Dependency
+## Adding SDK Service Dependency
 
-The AgentSDK provides local plugin project files. This allows inclusion into the project by simply specifying a dependency in the `pubspec.yaml` files for the app. In the `dependencies:` section of `pubspec.yaml` file add the following package reference:
+The SDK provides local plugin project files. This allows inclusion into the project by simply specifying a dependency in the `pubspec.yaml` files for the app. In the `dependencies:` section of `pubspec.yaml` file add the following package reference:
 
 ```yaml
   axsecurity_flutter_plugin:
@@ -17,19 +17,19 @@ The AgentSDK provides local plugin project files. This allows inclusion into the
 
 The `axsecurity_flutter_plugin` package provides a number of accessible classes:
 
-1. `AxService` provides a higher level interface to the underlying AgentSDK SDK.
+1. `AxService` provides a higher level interface to the underlying SDK SDK.
 2. `AxClient` which is a drop-in replacement for `Client` from the Flutter [http](https://pub.dev/packages/http) package and internally uses an `AxHttpClient` object.
 
 ### Android Manifest Changes
 
-The following app permissions need to be available in the manifest to use AgentSDK:
+The following app permissions need to be available in the manifest to use SDK:
 
 ```xml
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 <uses-permission android:name="android.permission.INTERNET" />
 ```
 
-Note that the minimum SDK version you can use with the AgentSDK package is 21 (Android 5.0).
+Note that the minimum SDK version you can use with the SDK package is 21 (Android 5.0).
 
 ### iOS Framework Dependencies
 
@@ -55,14 +55,14 @@ int? result;
 // Platform messages may fail, so we use a try/catch PlatformException.
 // We also handle the message potentially returning null.
 try {
-    var accessKeyID = 'your accessKeyID from SDK Deployment';
+    var accessKeyId = 'your accessKeyId from SDK Deployment';
     var accessKeySecret = 'your accessKeySecret from SDK Deployment';
-    var edgeAddresses = ['edge IP'];
+    var edgeNodes = ['edge IP'];
 
-    Config cfg = Config(
-        accessKeyID: accessKeyID,
+    AxConfig cfg = AxConfig(
+        accessKeyId: accessKeyId,
         accessKeySecret: accessKeySecret,
-        edgeAddresses: edgeAddresses,
+        edgeNodes: edgeNodes,
     );
 
     result = await AxService.initialize(config: cfg);
@@ -82,17 +82,17 @@ if (result == 0) {
 
 | Parameter | Description |
 |-----------|-------------|
-| `Config(accessKeyID: ...)` | AccessKey ID (required), obtained from the console |
-| `Config(accessKeySecret: ...)` | AccessKey Secret (required), obtained from the console |
-| `Config(edgeAddresses: ...)` | List of Edge node addresses (required); `List<String>`; at least 1, 2+ recommended |
-| `Config(dns: ...)` | DNS configuration (optional); construct a `DnsConfig`. Whitelist hosts for EdgeDoH via `addEdgeDohResolveDomain(...)` (or pass `edgeDohResolveDomains: [...]`); exempt specific hosts via `addEdgeDohBypassDomain(...)` (bypass takes priority over the whitelist). Patterns are exact or `*.suffix` wildcards. **Without a whitelist, all hosts resolve via the OS DNS resolver** — explicitly add hosts you want to protect via EdgeDoH. |
-| `Config(secureProxyEnabled: ...)` | Encrypted tunnel toggle (optional); enabled by default; pass `false` to disable |
+| `AxConfig(accessKeyId: ...)` | AccessKey ID (required), obtained from the console |
+| `AxConfig(accessKeySecret: ...)` | AccessKey Secret (required), obtained from the console |
+| `AxConfig(edgeNodes: ...)` | List of Edge node addresses (required); `List<String>`; at least 1, 2+ recommended |
+| `AxConfig(dns: ...)` | DNS configuration (optional); construct an `AxDnsConfig`. Whitelist hosts for EdgeDoH via `addEdgeDohResolveDomain(...)` (or pass `edgeDohResolveDomains: [...]`); exempt specific hosts via `addEdgeDohBypassDomain(...)` (bypass takes priority over the whitelist). Patterns are exact or `*.suffix` wildcards. **Without a whitelist, all hosts resolve via the OS DNS resolver** — explicitly add hosts you want to protect via EdgeDoH. |
+| `AxConfig(secureProxyEnabled: ...)` | Encrypted tunnel toggle (optional); enabled by default; pass `false` to disable |
 
 For full parameter semantics, constraints, and default behavior, see Appendix A of the integration guide.
 
-## Using AgentSDK With HTTP Client
+## Using SDK With HTTP Client
 
-The `AxClient` declared in the `axsecurity_flutter_plugin` package can be used as a drop-in replacement for [`HTTP Client`](https://pub.dev/documentation/http/latest/http/Client-class.html) from the Flutter http package. It handles requests the same way as the standard client, but with the additional protection provided by AgentSDK.
+The `AxClient` declared in the `axsecurity_flutter_plugin` package can be used as a drop-in replacement for [`HTTP Client`](https://pub.dev/documentation/http/latest/http/Client-class.html) from the Flutter http package. It handles requests the same way as the standard client, but with the additional protection provided by SDK.
 
 After creating the `AxClient` you can perform requests and await responses as normal, for example:
 
@@ -101,9 +101,9 @@ http.Client client = AxClient();
 http.Response response = await client.get(Uri.parse('https://your.domain/api'));
 ```
 
-## Using AgentSDK With Dio
+## Using SDK With Dio
 
-It is also possible to use AgentSDK with the [`Dio`](https://pub.dev/packages/dio) networking stack, since it uses `HttpClient` internally. When constructing a `Dio` object you need to override the underlying client used as follows:
+It is also possible to use SDK with the [`Dio`](https://pub.dev/packages/dio) networking stack, since it uses `HttpClient` internally. When constructing a `Dio` object you need to override the underlying client used as follows:
 
 ```Dart
 import 'package:dio/adapter.dart';
@@ -159,6 +159,6 @@ If something is wrong, look for these common issues:
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| `initialize` returns a negative value | Invalid credentials or unreachable Edge | Verify `accessKeyID`, `accessKeySecret`, and `edgeAddresses` |
+| `initialize` returns a negative value | Invalid credentials or unreachable Edge | Verify `accessKeyId`, `accessKeySecret`, and `edgeNodes` |
 | `initialize` resolves to `null` (`PlatformException`) | Native plugin not linked or build setup incomplete | Re-run `flutter pub get`; on iOS confirm the frameworks listed above are linked; on Android confirm the AAR is bundled |
 | Requests time out or fail with `Connection refused` | Internal proxy failed to start | Check network permissions and Edge connectivity; ensure `initialize` returned `0` before issuing requests |

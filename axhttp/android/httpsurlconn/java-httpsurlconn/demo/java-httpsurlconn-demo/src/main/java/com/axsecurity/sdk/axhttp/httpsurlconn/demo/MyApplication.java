@@ -3,8 +3,8 @@ package com.axsecurity.sdk.axhttp.httpsurlconn.demo;
 import android.app.Application;
 
 // *** UNCOMMENT THE LINE BELOW STEP 1***
-//import com.axsecurity.sdk.axhttp.httpsurlconn.AXHTTPService;
-//import com.axsecurity.sdk.base.Config;
+//import com.axsecurity.sdk.base.AXConfig;
+//import com.axsecurity.sdk.service.AXService;
 
 public class MyApplication extends Application {
 
@@ -13,15 +13,14 @@ public class MyApplication extends Application {
         super.onCreate();
         // *** UNCOMMENT THE LINE BELOW STEP 1***
         /*
-        String accessKeyID = "your accessKeyID from SDK Deployment";
+        String accessKeyId = "your accessKeyId from SDK Deployment";
         String accessKeySecret = "your accessKeySecret from SDK Deployment";
-        String[] edgeAddresses = { "edge IP" };
-        Config config = new Config.Builder()
-            .accessKeyID(accessKeyID)
-            .accessKeySecret(accessKeySecret)
-            .edgeAddresses(edgeAddresses)
+        String[] edgeNodes = { "edge IP" };
+        AXConfig config = new AXConfig.Builder()
+            .accessKey(accessKeyId, accessKeySecret)
+            .edgeNodes(edgeNodes)
             .build();
-        if (AXHTTPService.initialize(this.getApplicationContext(), config) == 0) {
+        if (AXService.initialize(this.getApplicationContext(), config) == 0) {
             //TODO
         } else {
             //TODO

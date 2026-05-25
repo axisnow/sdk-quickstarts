@@ -1,18 +1,18 @@
-# AgentSDK Quickstart: iOS ObjectiveC
+# SDK Quickstart: iOS ObjectiveC
 
 English | [简体中文](./README.md)
 
-This quickstart is written specifically for native iOS apps that are written in ObjectiveC and make TCP / socket-level API calls that you wish to protect with AgentSDK. If this is not your situation then check if there is a more relevant quickstart guide available.
+This quickstart is written specifically for native iOS apps that are written in ObjectiveC and make TCP / socket-level API calls that you wish to protect with SDK. If this is not your situation then check if there is a more relevant quickstart guide available.
 
-This page provides all the steps for integrating AgentSDK into your app. Additionally, a step-by-step tutorial guide using our [ios-demo](./Demo/) is also available.
+This page provides all the steps for integrating SDK into your app. Additionally, a step-by-step tutorial guide using our [ios-demo](./Demo/) is also available.
 
-Note that the minimum supported iOS version is 12.0. You cannot use AgentSDK in apps that support iOS versions older than this.
+Note that the minimum supported iOS version is 12.0. You cannot use SDK in apps that support iOS versions older than this.
 
-## Adding AgentSDK Service Dependency
+## Adding SDK Service Dependency
 
 Copy `AXSecurity.framework` into your app's project directory (e.g. `YourApp/Frameworks/`) and add it to the **Link Binary with Libraries** section of your target's **Build Phases**:
 
-1. `AXSecurity.framework` — AgentSDK core SDK
+1. `AXSecurity.framework` — SDK core SDK
 
 Then add the following system dependencies to the same **Link Binary with Libraries** section:
 
@@ -32,28 +32,23 @@ YourApp/
 
 ## Initializing AXService
 
-In order to use `AXService` you must initialize it when your app is created, usually in `application:didFinishLaunchingWithOptions:`. `AXService` is instance-based — keep a single long-lived instance and reuse it throughout the app:
+In order to use `AXService` you must initialize it when your app is created, usually in `application:didFinishLaunchingWithOptions:`. All `AXService` APIs are class methods — no instance is needed:
 
 ```objc
 #import <AXSecurity/axsecurity.h>
-
-@interface AppDelegate ()
-@property (nonatomic, strong) AXService *axservice;
-@end
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     AXConfig *config = [[AXConfig alloc] init];
-    config.accessKeyId     = @"your accessKeyID from SDK Deployment";
+    config.accessKeyID     = @"your accessKeyID from SDK Deployment";
     config.accessKeySecret = @"your accessKeySecret from SDK Deployment";
-    config.edgeAddresses   = @[ @"edge IP or hostname" ];
+    config.edgeNodes   = @[ @"edge IP or hostname" ];
 
-    self.axservice = [[AXService alloc] init];
-    int r = [self.axservice initialize:config];
+    int r = [AXService initialize:config];
     if (r != 0) {
-        NSLog(@"AgentSDK initialization failed: %d", r);
+        NSLog(@"SDK initialization failed: %d", r);
     }
     return YES;
 }
@@ -69,9 +64,9 @@ In order to use `AXService` you must initialize it when your app is created, usu
 
 | Parameter | Description |
 |-----------|-------------|
-| `AXConfig.accessKeyId` | AccessKey ID (required), obtained from the console |
+| `AXConfig.accessKeyID` | AccessKey ID (required), obtained from the console |
 | `AXConfig.accessKeySecret` | AccessKey Secret (required), obtained from the console |
-| `AXConfig.edgeAddresses` | List of Edge node addresses (required); `NSArray<NSString *>`; at least 1, 2+ recommended |
+| `AXConfig.edgeNodes` | List of Edge node addresses (required); `NSArray<NSString *>`; at least 1, 2+ recommended |
 | `AXConfig.dns` | DNS configuration (optional); construct via `AXDNSConfig`. Whitelist hosts for EdgeDoH via `-addEdgeDohResolveDomain:` (or assign `edgeDohResolveDomains` directly); exempt specific hosts via `-addEdgeDohBypassDomain:` (bypass takes priority over the whitelist). Patterns are exact or `*.suffix` wildcards. **Without a whitelist, all hosts resolve via the OS DNS resolver** — explicitly add hosts you want to protect via EdgeDoH. |
 | `AXConfig.secureProxyEnabled` | Encrypted tunnel toggle (optional); enabled by default; set `NO` to disable |
 
@@ -86,7 +81,7 @@ NSString *requestHost = @"your.server.domain";
 int       requestPort = 7000;
 
 AXLocalProxy proxy;
-int res = [self.axservice getLocalTCPProxy:&proxy host:requestHost port:requestPort];
+int res = [AXService getLocalTCPProxy:&proxy host:requestHost port:requestPort];
 if (res < 0) {
     // SDK not ready — check initialization result or retry later
     return;
@@ -117,10 +112,10 @@ In addition to per-host TCP proxy, `AXService` exposes:
 
 ```objc
 AXLocalProxy http;
-[self.axservice getLocalHTTPProxy:&http];    // local HTTP proxy endpoint
+[AXService getLocalHTTPProxy:&http];    // local HTTP proxy endpoint
 
 AXLocalProxy socks5;
-[self.axservice getLocalSocks5Proxy:&socks5]; // local SOCKS5 proxy endpoint
+[AXService getLocalSocks5Proxy:&socks5]; // local SOCKS5 proxy endpoint
 ```
 
 Use these if you need to route a custom HTTP client or an arbitrary TCP client through the SDK as a system-style proxy.
@@ -130,10 +125,10 @@ Use these if you need to route a custom HTTP client or an arbitrary TCP client t
 `AXService` also provides DNS resolution backed by the SDK's protected resolver:
 
 ```objc
-NSArray<NSString *> *v4 = [self.axservice getIPv4sForHost:@"your.server.domain"];
-NSArray<NSString *> *v6 = [self.axservice getIPv6sForHost:@"your.server.domain"];
+NSArray<NSString *> *v4 = [AXService getIPv4sForHost:@"your.server.domain"];
+NSArray<NSString *> *v6 = [AXService getIPv6sForHost:@"your.server.domain"];
 
-[self.axservice clearDNSCache]; // invalidate cached entries if needed
+[AXService clearDNSCache]; // invalidate cached entries if needed
 ```
 
 ## Error Handling
@@ -142,7 +137,7 @@ NSArray<NSString *> *v6 = [self.axservice getIPv6sForHost:@"your.server.domain"]
 
 ```objc
 AXLocalProxy proxy;
-int res = [self.axservice getLocalTCPProxy:&proxy host:requestHost port:requestPort];
+int res = [AXService getLocalTCPProxy:&proxy host:requestHost port:requestPort];
 if (res < 0) {
     // SDK not ready — check initialization result or retry later
     return;
@@ -171,6 +166,6 @@ If something is wrong, look for these common issues:
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| `initialize:` returns a negative value | Invalid credentials or unreachable Edge | Verify `accessKeyId`, `accessKeySecret`, and `edgeAddresses` |
+| `initialize:` returns a negative value | Invalid credentials or unreachable Edge | Verify `accessKeyID`, `accessKeySecret`, and `edgeNodes` |
 | `getLocalTCPProxy:host:port:` returns a negative value | SDK not initialized or proxy not ready | Ensure `initialize:` returned `0` before calling the proxy APIs |
 | Connections time out or fail with `ECONNREFUSED` | Internal proxy failed to start | Check `initialize:` return code and Edge connectivity |

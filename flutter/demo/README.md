@@ -1,14 +1,14 @@
-# AgentSDK 快速接入：Flutter HTTP Client
+# SDK 快速接入：Flutter HTTP Client
 
 [English](./README.en.md) | 简体中文
 
 本快速接入指南面向使用 [`Flutter`](https://flutter.dev/) 开发、并通过 [`HTTP Client`](https://pub.dev/documentation/http/latest/http/Client-class.html)、[`Dart IO HttpClient`](https://api.dart.dev/stable/2.16.2/dart-io/HttpClient-class.html) 或 [`Dio`](https://pub.dev/packages/dio) 发起网络请求的 Android / iOS 应用。如果你的场景与此不符，请查阅更贴近的接入指南。
 
-本页列出了将 AgentSDK 集成到你的应用所需的全部步骤；同时我们还提供了基于示例工程的分步教程。
+本页列出了将 SDK 集成到你的应用所需的全部步骤；同时我们还提供了基于示例工程的分步教程。
 
-## 添加 AgentSDK 服务依赖
+## 添加 SDK 服务依赖
 
-AgentSDK 以本地 plugin 工程的形式提供，可直接通过 `pubspec.yaml` 中的本地依赖引用。在应用的 `pubspec.yaml` 的 `dependencies:` 段下添加：
+SDK 以本地 plugin 工程的形式提供，可直接通过 `pubspec.yaml` 中的本地依赖引用。在应用的 `pubspec.yaml` 的 `dependencies:` 段下添加：
 
 ```yaml
   axsecurity_flutter_plugin:
@@ -17,19 +17,19 @@ AgentSDK 以本地 plugin 工程的形式提供，可直接通过 `pubspec.yaml`
 
 `axsecurity_flutter_plugin` 包暴露了若干可直接使用的类：
 
-1. `AxService` —— 对底层 AgentSDK 的高层封装。
+1. `AxService` —— 对底层 SDK 的高层封装。
 2. `AxClient` —— Flutter [http](https://pub.dev/packages/http) 包中 `Client` 的直接替代品；内部使用 `AxHttpClient` 实现。
 
 ### Android Manifest 修改
 
-在 `AndroidManifest.xml` 中声明以下权限以使用 AgentSDK：
+在 `AndroidManifest.xml` 中声明以下权限以使用 SDK：
 
 ```xml
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 <uses-permission android:name="android.permission.INTERNET" />
 ```
 
-注意：AgentSDK 支持的最低 Android SDK 版本为 21（Android 5.0）。
+注意：SDK 支持的最低 Android SDK 版本为 21（Android 5.0）。
 
 ### iOS Framework 依赖
 
@@ -55,14 +55,14 @@ int? result;
 // Platform messages 可能失败，使用 try/catch 捕获 PlatformException，
 // 并处理可能为 null 的返回值。
 try {
-    var accessKeyID = 'SDK 部署时获得的 accessKeyID';
+    var accessKeyId = 'SDK 部署时获得的 accessKeyId';
     var accessKeySecret = 'SDK 部署时获得的 accessKeySecret';
-    var edgeAddresses = ['Edge 节点 IP'];
+    var edgeNodes = ['Edge 节点 IP'];
 
-    Config cfg = Config(
-        accessKeyID: accessKeyID,
+    AxConfig cfg = AxConfig(
+        accessKeyId: accessKeyId,
         accessKeySecret: accessKeySecret,
-        edgeAddresses: edgeAddresses,
+        edgeNodes: edgeNodes,
     );
 
     result = await AxService.initialize(config: cfg);
@@ -82,17 +82,17 @@ if (result == 0) {
 
 | 参数 | 说明 |
 |------|------|
-| `Config(accessKeyID: ...)` | AccessKey ID（必填），从控制台获取 |
-| `Config(accessKeySecret: ...)` | AccessKey Secret（必填），从控制台获取 |
-| `Config(edgeAddresses: ...)` | Edge 节点地址列表（必填），`List<String>`，至少 1 个，推荐 2+ |
-| `Config(dns: ...)` | DNS 配置（可选），通过 `DnsConfig` 构造。使用 `addEdgeDohResolveDomain(...)`（或直接传入 `edgeDohResolveDomains: [...]`）将主机加入 EdgeDoH 白名单；使用 `addEdgeDohBypassDomain(...)` 为白名单中的特定主机豁免（bypass 优先于 resolve）。匹配规则为精确域名或 `*.suffix` 通配。**未配置白名单时所有主机走系统 DNS**，需要 EdgeDoH 防护的主机请显式加入。 |
-| `Config(secureProxyEnabled: ...)` | 加密隧道开关（可选），默认启用；显式传 `false` 关闭 |
+| `AxConfig(accessKeyId: ...)` | AccessKey ID（必填），从控制台获取 |
+| `AxConfig(accessKeySecret: ...)` | AccessKey Secret（必填），从控制台获取 |
+| `AxConfig(edgeNodes: ...)` | Edge 节点地址列表（必填），`List<String>`，至少 1 个，推荐 2+ |
+| `AxConfig(dns: ...)` | DNS 配置（可选），通过 `AxDnsConfig` 构造。使用 `addEdgeDohResolveDomain(...)`（或直接传入 `edgeDohResolveDomains: [...]`）将主机加入 EdgeDoH 白名单；使用 `addEdgeDohBypassDomain(...)` 为白名单中的特定主机豁免（bypass 优先于 resolve）。匹配规则为精确域名或 `*.suffix` 通配。**未配置白名单时所有主机走系统 DNS**，需要 EdgeDoH 防护的主机请显式加入。 |
+| `AxConfig(secureProxyEnabled: ...)` | 加密隧道开关（可选），默认启用；显式传 `false` 关闭 |
 
 完整参数语义、约束与默认行为见接入指南附录 A。
 
 ## 配合 HTTP Client 使用
 
-`axsecurity_flutter_plugin` 包中的 `AxClient` 可作为 Flutter http 包中 [`HTTP Client`](https://pub.dev/documentation/http/latest/http/Client-class.html) 的直接替代品。它处理请求的方式与标准 client 完全一致，但额外具备 AgentSDK 提供的防护能力。
+`axsecurity_flutter_plugin` 包中的 `AxClient` 可作为 Flutter http 包中 [`HTTP Client`](https://pub.dev/documentation/http/latest/http/Client-class.html) 的直接替代品。它处理请求的方式与标准 client 完全一致，但额外具备 SDK 提供的防护能力。
 
 创建 `AxClient` 后即可像普通 `http.Client` 一样发起请求并 `await` 响应：
 
@@ -103,7 +103,7 @@ http.Response response = await client.get(Uri.parse('https://your.domain/api'));
 
 ## 配合 Dio 使用
 
-由于 [`Dio`](https://pub.dev/packages/dio) 内部基于 `HttpClient` 实现，因此也可以与 AgentSDK 配合使用。在创建 `Dio` 对象时，按以下方式替换其底层使用的 client：
+由于 [`Dio`](https://pub.dev/packages/dio) 内部基于 `HttpClient` 实现，因此也可以与 SDK 配合使用。在创建 `Dio` 对象时，按以下方式替换其底层使用的 client：
 
 ```Dart
 import 'package:dio/adapter.dart';
@@ -159,6 +159,6 @@ try {
 
 | 现象 | 原因 | 解决方案 |
 |------|------|---------|
-| `initialize` 返回负数 | 凭证错误或 Edge 不可达 | 检查 `accessKeyID`、`accessKeySecret` 和 `edgeAddresses` 是否正确 |
+| `initialize` 返回负数 | 凭证错误或 Edge 不可达 | 检查 `accessKeyId`、`accessKeySecret` 和 `edgeNodes` 是否正确 |
 | `initialize` 返回 `null`（`PlatformException`） | 原生插件未链接或构建配置不完整 | 重新执行 `flutter pub get`；iOS 端确认上述 framework 已链接；Android 端确认 AAR 已正确打包 |
 | 请求超时或报 `Connection refused` | 内部代理启动失败 | 检查网络权限与 Edge 连通性；确保 `initialize` 返回 `0` 后再发起请求 |

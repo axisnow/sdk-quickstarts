@@ -41,8 +41,7 @@ public class AXSecurityDemoBehaviourScript : MonoBehaviour
                 {
                     AccessKeyID = "accessKeyID of SDK Deployment",
                     AccessKeySecret = "accessKeySecret of SDK Deployment",
-                    EdgeAddresses = new string[] { "edge IP" },
-                    RoutingDomain = "", // optional
+                    EdgeNodes = new string[] { "edge IP" },
                     // Without a whitelist, all hosts resolve via the OS DNS.
                     // Add domains here that should resolve via EdgeDoH.
                     Dns = new DnsConfig

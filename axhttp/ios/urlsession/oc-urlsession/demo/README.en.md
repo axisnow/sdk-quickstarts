@@ -1,19 +1,19 @@
-# AgentSDK Quickstart: iOS ObjectiveC NSURLSession
+# SDK Quickstart: iOS ObjectiveC NSURLSession
 
 English | [简体中文](./README.md)
 
-This quickstart is written specifically for native iOS apps that are written in ObjectiveC and make their API calls using `NSURLSession` that you wish to protect with AgentSDK. If this is not your situation then check if there is a more relevant quickstart guide available.
+This quickstart is written specifically for native iOS apps that are written in ObjectiveC and make their API calls using `NSURLSession` that you wish to protect with SDK. If this is not your situation then check if there is a more relevant quickstart guide available.
 
-This page provides all the steps for integrating AgentSDK into your app. Additionally, a step-by-step tutorial guide using our [ios-urlsession-demo](./demo/) is also available.
+This page provides all the steps for integrating SDK into your app. Additionally, a step-by-step tutorial guide using our [ios-urlsession-demo](./demo/) is also available.
 
-Note that the minimum supported iOS version is 12.0. You cannot use AgentSDK in apps that support iOS versions older than this.
+Note that the minimum supported iOS version is 12.0. You cannot use SDK in apps that support iOS versions older than this.
 
-## Adding AgentSDK Service Dependency
+## Adding SDK Service Dependency
 
 Copy the following frameworks into your app's project directory (e.g. `YourApp/Frameworks/`) and add them to the **Link Binary with Libraries** section of your target's **Build Phases**:
 
-1. `AXSecurityNSURLSession.framework` — AgentSDK NSURLSession wrapper
-2. `AXSecurity.framework` — AgentSDK core SDK
+1. `AXSecurityNSURLSession.framework` — SDK NSURLSession wrapper
+2. `AXSecurity.framework` — SDK core SDK
 
 Then add the following system dependencies to the same **Link Binary with Libraries** section:
 
@@ -32,9 +32,9 @@ YourApp/
     └── AXSecurity.framework
 ```
 
-## Initializing AXNSURLSessionService
+## Initializing SDK
 
-In order to use `AXNSURLSessionService` you must initialize it when your app is created, usually in `application:didFinishLaunchingWithOptions:`:
+In order to use SDK you must initialize it when your app is created, usually in `application:didFinishLaunchingWithOptions:`:
 
 ```objc
 #import <AXSecurityNSURLSession/AXNSURLSessionHeader.h>
@@ -42,33 +42,33 @@ In order to use `AXNSURLSessionService` you must initialize it when your app is 
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     AXConfig *config = [[AXConfig alloc] init];
-    config.accessKeyId     = @"your accessKeyID from SDK Deployment";
+    config.accessKeyID     = @"your accessKeyID from SDK Deployment";
     config.accessKeySecret = @"your accessKeySecret from SDK Deployment";
-    config.edgeAddresses   = @[ @"edge IP or hostname" ];
+    config.edgeNodes   = @[ @"edge IP or hostname" ];
 
-    int r = [AXNSURLSessionService Initialize:config];
+    int r = [AXService initialize:config];
     if (r != 0) {
-        NSLog(@"AgentSDK initialization failed: %d", r);
+        NSLog(@"SDK initialization failed: %d", r);
     }
     return YES;
 }
 ```
 
-`Initialize:` returns `0` on success or a negative error code on failure.
+`initialize:` returns `0` on success or a negative error code on failure.
 
-> **Important:** `Initialize:` must be called exactly once before constructing any `AXNSURLSession`. Calling it more than once is not supported.
+> **Important:** `[AXService initialize:]` must be called exactly once before constructing any `AXNSURLSession`. Calling it more than once is not supported.
 
 ## Parameter Reference
 
 | Parameter | Description |
 |-----------|-------------|
-| `AXConfig.accessKeyId` | AccessKey ID (required), obtained from the console |
+| `AXConfig.accessKeyID` | AccessKey ID (required), obtained from the console |
 | `AXConfig.accessKeySecret` | AccessKey Secret (required), obtained from the console |
-| `AXConfig.edgeAddresses` | List of Edge node addresses (required); `NSArray<NSString *>`; at least 1, 2+ recommended |
+| `AXConfig.edgeNodes` | List of Edge node addresses (required); `NSArray<NSString *>`; at least 1, 2+ recommended |
 
-This demo uses the minimum required fields. The full `AXConfig` option set (DNS configuration, encrypted tunnel toggle, etc.) and parameter semantics are documented in the AgentSDK integration guide.
+This demo uses the minimum required fields. The full `AXConfig` option set (DNS configuration, encrypted tunnel toggle, etc.) and parameter semantics are documented in the SDK integration guide.
 
-## Using AXNSURLSessionService
+## Using AXNSURLSession
 
 `AXNSURLSession` is a drop-in replacement for Apple's `NSURLSession`. To migrate, replace each `[NSURLSession sessionWithConfiguration:...]` with `[AXNSURLSession sessionWithConfiguration:...]`. Everything else — task creation, completion handlers, delegate callbacks — stays the same.
 
@@ -85,7 +85,7 @@ NSURLSessionDataTask *task =
 [task resume];
 ```
 
-The returned object is an `NSURLSession` that transparently routes all traffic through AgentSDK's local proxy. Hold it for the lifetime of the feature that uses it, just like a normal `NSURLSession`.
+The returned object is an `NSURLSession` that transparently routes all traffic through SDK's local proxy. Hold it for the lifetime of the feature that uses it, just like a normal `NSURLSession`.
 
 ## Custom NSURLSessionConfiguration
 
@@ -114,10 +114,10 @@ Your delegate methods receive the original challenges exactly as if you had crea
 
 ## Error Handling
 
-`Initialize:` returns a non-zero status if the SDK cannot reach the Edge or the credentials are invalid. Always check it before constructing sessions:
+`[AXService initialize:]` returns a non-zero status if the SDK cannot reach the Edge or the credentials are invalid. Always check it before constructing sessions:
 
 ```objc
-int r = [AXNSURLSessionService Initialize:config];
+int r = [AXService initialize:config];
 if (r != 0) {
     // SDK not ready — do not construct AXNSURLSession yet
     return;
@@ -141,7 +141,7 @@ Network errors during requests are reported as standard `NSError` instances on y
 
 After integrating the SDK, run your app and watch the Xcode console for the `[AXNSURLSession]` tag. On a successful integration you should see:
 
-1. No error logs from `AXNSURLSessionService Initialize:`.
+1. No error logs from `[AXService initialize:]`.
 2. A single `[AXNSURLSession] inner session built, proxy=127.0.0.1:<port>` line the first time you create a session.
 3. `[AXNSURLSession] proxy unchanged=...` lines as subsequent requests reuse the session.
 
@@ -149,9 +149,9 @@ If something is wrong, look for these common issues:
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| `Initialize:` returns a negative value | Invalid credentials or unreachable Edge | Verify `accessKeyId`, `accessKeySecret`, and `edgeAddresses` |
-| `[AXNSURLSession] proxy lookup failed` in console | `AXNSURLSession` constructed before `Initialize:` succeeded | Ensure `Initialize:` returned `0` before `+sessionWithConfiguration:` |
-| Requests time out or fail with `NSURLErrorCannotConnectToHost` | Local proxy not running | Check `Initialize:` return code and Edge connectivity |
+| `[AXService initialize:]` returns a negative value | Invalid credentials or unreachable Edge | Verify `accessKeyID`, `accessKeySecret`, and `edgeNodes` |
+| `[AXNSURLSession] proxy lookup failed` in console | `AXNSURLSession` constructed before `[AXService initialize:]` succeeded | Ensure `[AXService initialize:]` returned `0` before `+sessionWithConfiguration:` |
+| Requests time out or fail with `NSURLErrorCannotConnectToHost` | Local proxy not running | Check `[AXService initialize:]` return code and Edge connectivity |
 | TLS errors against a self-signed / internal certificate | `AXNSURLSession` no longer bypasses TLS trust | Implement `-URLSession:didReceiveChallenge:completionHandler:` on your own delegate |
 
 ## Unsupported Capabilities
@@ -162,4 +162,4 @@ If something is wrong, look for these common issues:
 2. **Background sessions** (`+[NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:]`) — these run in the system `nsurlsessiond` process outside your app, so they cannot reach the in-app local proxy. This is an architectural incompatibility.
 3. **`NSURLSessionStreamTask`** (raw TCP) — `connectionProxyDictionary` does not apply to stream tasks. `-streamTaskWithHostName:port:` still returns a task for source compatibility, but the TCP stream goes direct, not through the local proxy.
 4. **Silent TLS trust bypass** — `AXNSURLSession` does not accept invalid server certificates for you. If your app needs to trust a self-signed or otherwise non-standard certificate, implement `-URLSession:didReceiveChallenge:completionHandler:` on your own delegate.
-5. **Constructing `AXNSURLSession` before `Initialize:` returns `0`** — session construction reads the local proxy address at the moment of the first call. If you construct `AXNSURLSession` before `AXNSURLSessionService Initialize:` succeeds, the underlying session may be built without proxy routing. Always initialize first.
+5. **Constructing `AXNSURLSession` before `[AXService initialize:]` returns `0`** — session construction reads the local proxy address at the moment of the first call. If you construct `AXNSURLSession` before `[AXService initialize:]` succeeds, the underlying session may be built without proxy routing. Always initialize first.

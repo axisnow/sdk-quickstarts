@@ -2,25 +2,24 @@ package com.axsecurity.sdk.axhttp.okhttp.demo;
 
 import android.app.Application;
 
-import com.axsecurity.sdk.axhttp.okhttp.AXHTTPService;
-import com.axsecurity.sdk.base.Config;
+import com.axsecurity.sdk.base.AXConfig;
+import com.axsecurity.sdk.service.AXService;
 
 public class MyApplication extends Application {
 
     @Override
     public void onCreate() {
         super.onCreate();
-        // *** UNCOMMENT THE LINE BELOW FOR AgentSDK ***
+        // *** UNCOMMENT THE LINE BELOW FOR SDK ***
         /*
-        String accessKeyID = "your accessKeyID from SDK Deployment";
+        String accessKeyId = "your accessKeyId from SDK Deployment";
         String accessKeySecret = "your accessKeySecret from SDK Deployment";
-        String[] edgeAddresses = { "edge IP" };
-        Config config = new Config.Builder()
-            .accessKeyID(accessKeyID)
-            .accessKeySecret(accessKeySecret)
-            .edgeAddresses(edgeAddresses)
+        String[] edgeNodes = { "edge IP" };
+        AXConfig config = new AXConfig.Builder()
+            .accessKey(accessKeyId, accessKeySecret)
+            .edgeNodes(edgeNodes)
             .build();
-        if (AXHTTPService.initialize(this.getApplicationContext(), config) == 0) {
+        if (AXService.initialize(this.getApplicationContext(), config) == 0) {
             //TODO
         } else {
             //TODO

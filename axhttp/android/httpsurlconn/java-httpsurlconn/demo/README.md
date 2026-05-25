@@ -1,12 +1,12 @@
-# AgentSDK Quickstart：Android Java HttpsURLConnection
+# SDK Quickstart：Android Java HttpsURLConnection
 
 [English](./README.en.md) | 简体中文
 
-本快速开始文档面向使用 Java 编写、并通过 `HttpsURLConnection` 发起 API 请求、希望使用 AgentSDK 进行保护的原生 Android 应用。如果你的情况不符合，请查阅其他更合适的快速开始指南。
+本快速开始文档面向使用 Java 编写、并通过 `HttpsURLConnection` 发起 API 请求、希望使用 SDK 进行保护的原生 Android 应用。如果你的情况不符合，请查阅其他更合适的快速开始指南。
 
-本页介绍将 AgentSDK 接入你的应用所需的全部步骤。此外还提供配套示例工程 [java-httpsurlconn-demo](java-httpsurlconn-demo/) 可供参考。
+本页介绍将 SDK 接入你的应用所需的全部步骤。此外还提供配套示例工程 [java-httpsurlconn-demo](java-httpsurlconn-demo/) 可供参考。
 
-## 添加 AgentSDK 服务依赖
+## 添加 SDK 服务依赖
 
 在应用模块的 `build.gradle` 中添加依赖：
 
@@ -27,25 +27,26 @@ app/
 
 ## 修改 Manifest
 
-使用 AgentSDK 需要在 Manifest 中声明以下权限：
+使用 SDK 需要在 Manifest 中声明以下权限：
 
 ```xml
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 <uses-permission android:name="android.permission.INTERNET" />
 ```
 
-AgentSDK 支持的最低 SDK 版本为 21（Android 5.0）。
+SDK 支持的最低 SDK 版本为 21（Android 5.0）。
 
-## 初始化 AXHTTPService
+## 初始化 SDK
 
-要使用 `AXHTTPService`，必须在应用启动时（通常在 `Application.onCreate` 中）完成初始化：
+要使用 SDK，必须在应用启动时（通常在 `Application.onCreate` 中）完成初始化：
 
 ```java
 import android.app.Application;
 import android.util.Log;
 
 import com.axsecurity.sdk.axhttp.httpsurlconn.AXHTTPService;
-import com.axsecurity.sdk.base.Config;
+import com.axsecurity.sdk.base.AXConfig;
+import com.axsecurity.sdk.service.AXService;
 
 public class MyApplication extends Application {
 
@@ -53,19 +54,18 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        String accessKeyID = "your accessKeyID from SDK Deployment";
+        String accessKeyId = "your accessKeyId from SDK Deployment";
         String accessKeySecret = "your accessKeySecret from SDK Deployment";
-        String[] edgeAddresses = {"edge IP"};
+        String[] edgeNodes = {"edge IP"};
 
-        Config config = new Config.Builder()
-            .accessKeyID(accessKeyID)
-            .accessKeySecret(accessKeySecret)
-            .edgeAddresses(edgeAddresses)
+        AXConfig config = new AXConfig.Builder()
+            .accessKey(accessKeyId, accessKeySecret)
+            .edgeNodes(edgeNodes)
             .build();
 
-        int result = AXHTTPService.initialize(this.getApplicationContext(), config);
+        int result = AXService.initialize(this.getApplicationContext(), config);
         if (result != 0) {
-            Log.e("MyApp", "AgentSDK initialization failed: " + result);
+            Log.e("MyApp", "SDK initialization failed: " + result);
         }
     }
 }
@@ -73,17 +73,16 @@ public class MyApplication extends Application {
 
 `initialize` 方法在成功时返回 `0`，失败时返回负值错误码：
 
-> **重要：** `initialize` 必须在调用任何其他 `AXHTTPService` 方法之前执行且仅执行一次，不支持重复调用。
+> **重要：** `AXService.initialize` 必须在调用任何 `AXHTTPService` 方法之前执行且仅执行一次，不支持重复调用。
 
 ## 参数说明
 
 | 参数 | 说明 |
 |------|------|
-| `Config.Builder().accessKeyID(...)` | AccessKey ID（必填），从控制台获取 |
-| `Config.Builder().accessKeySecret(...)` | AccessKey Secret（必填），从控制台获取 |
-| `Config.Builder().edgeAddresses(...)` | Edge 节点地址列表（必填），传入 `String[]`，至少 1 个，推荐 2+ |
+| `AXConfig.Builder().accessKey(...)` | AccessKey ID 与 Secret（必填），从控制台获取 |
+| `AXConfig.Builder().edgeNodes(...)` | Edge 节点地址列表（必填），传入 `String[]`，至少 1 个，推荐 2+ |
 
-本 demo 仅使用上述最小必填字段。`Config.Builder` 的完整选项（DNS 配置、加密隧道开关等）以及参数语义详见 AgentSDK 接入指南。
+本 demo 仅使用上述最小必填字段。`AXConfig.Builder` 的完整选项（DNS 配置、加密隧道开关等）以及参数语义详见 SDK 接入指南。
 
 ## 使用 AXHTTPService
 
@@ -94,7 +93,7 @@ URL url = new URL("https://example.com");
 HttpsURLConnection connection = AXHTTPService.getHttpsURLConnection(url);
 ```
 
-返回的是一个标准的 `HttpsURLConnection`，已经绑定到目标 URL，并通过 HTTPS CONNECT 隧道经由 AgentSDK 本地 HTTP 代理转发。可以像使用未经代理的 `HttpsURLConnection` 一样，在其上配置请求头、请求方法、超时时间等。
+返回的是一个标准的 `HttpsURLConnection`，已经绑定到目标 URL，并通过 HTTPS CONNECT 隧道经由 SDK 本地 HTTP 代理转发。可以像使用未经代理的 `HttpsURLConnection` 一样，在其上配置请求头、请求方法、超时时间等。
 
 ## 自定义 HttpsURLConnection
 
@@ -162,6 +161,6 @@ try {
 
 | 现象 | 原因 | 解决方式 |
 |------|------|----------|
-| `initialize` 返回 `-1` | 凭证错误或 Edge 节点不可达 | 核对 `accessKeyID`、`accessKeySecret` 与 `edgeAddresses` |
+| `initialize` 返回 `-1` | 凭证错误或 Edge 节点不可达 | 核对 `accessKeyId`、`accessKeySecret` 与 `edgeNodes` |
 | `getHttpsURLConnection()` 返回 `null` | SDK 未初始化或代理未就绪 | 确认 `initialize` 已返回 `0` 再调用 `getHttpsURLConnection()` |
 | Logcat 出现 `Local HTTP proxy not available` | 内部代理启动失败 | 检查网络权限与 Edge 节点连通性 |

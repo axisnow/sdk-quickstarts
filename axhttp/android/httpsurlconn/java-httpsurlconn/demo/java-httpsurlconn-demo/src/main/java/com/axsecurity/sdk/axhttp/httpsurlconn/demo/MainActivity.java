@@ -73,10 +73,10 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     URL url = new URL(URL);
 
-                    // *** COMMENT THE LINE BELOW FOR AgentSDK ***
+                    // *** COMMENT THE LINE BELOW FOR SDK ***
                     HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 
-                    // *** UNCOMMENT THE LINE BELOW FOR AgentSDK ***
+                    // *** UNCOMMENT THE LINE BELOW FOR SDK ***
                     // HttpsURLConnection connection = AXHTTPService.getHttpsURLConnection(url);
 
                     connection.setRequestMethod("GET");

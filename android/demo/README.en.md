@@ -1,12 +1,12 @@
-# AgentSDK Quickstart: Android Java
+# SDK Quickstart: Android Java
 
 English | [简体中文](./README.md)
 
-This quickstart is written specifically for native Android apps that are written in Java and make TCP/socket-level API calls that you wish to protect with AgentSDK. If this is not your situation then check if there is a more relevant quickstart guide available.
+This quickstart is written specifically for native Android apps that are written in Java and make TCP/socket-level API calls that you wish to protect with SDK. If this is not your situation then check if there is a more relevant quickstart guide available.
 
-This page provides all the steps for integrating AgentSDK into your app. Additionally, a step-by-step tutorial guide using our [axsecurity-demo](axsecurity-demo/) is also available.
+This page provides all the steps for integrating SDK into your app. Additionally, a step-by-step tutorial guide using our [axsecurity-demo](axsecurity-demo/) is also available.
 
-## Adding AgentSDK Service Dependency
+## Adding SDK Service Dependency
 
 Add the dependency in your app's `build.gradle`:
 
@@ -26,14 +26,14 @@ app/
 
 ## Manifest Changes
 
-The following app permissions need to be available in the manifest to use AgentSDK:
+The following app permissions need to be available in the manifest to use SDK:
 
 ```xml
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 <uses-permission android:name="android.permission.INTERNET" />
 ```
 
-Note that the minimum SDK version you can use with the AgentSDK package is 21 (Android 5.0).
+Note that the minimum SDK version you can use with the SDK package is 21 (Android 5.0).
 
 ## Initializing AXService
 
@@ -44,7 +44,7 @@ import android.app.Application;
 import android.util.Log;
 
 import com.axsecurity.sdk.service.AXService;
-import com.axsecurity.sdk.base.Config;
+import com.axsecurity.sdk.base.AXConfig;
 
 public class MyApplication extends Application {
 
@@ -52,15 +52,14 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        String accessKeyID = "your accessKeyID from SDK Deployment";
+        String accessKeyId = "your accessKeyId from SDK Deployment";
         String accessKeySecret = "your accessKeySecret from SDK Deployment";
-        String[] edgeAddresses = {"edge IP"};
+        String[] edgeNodes = {"edge IP"};
 
-        Config config = new Config.Builder()
-            .accessKeyID(accessKeyID)
-            .accessKeySecret(accessKeySecret)
-            .edgeAddresses(edgeAddresses)
-            .dnsConfig(new Config.DnsConfig.DnsBuilder()
+        AXConfig config = new AXConfig.Builder()
+            .accessKey(accessKeyId, accessKeySecret)
+            .edgeNodes(edgeNodes)
+            .dns(new AXConfig.DnsConfig.Builder()
                 .addEdgeDohResolveDomain("*.example.com")
                 .build())
             .secureProxyEnabled(true)
@@ -68,7 +67,7 @@ public class MyApplication extends Application {
 
         int result = AXService.initialize(this.getApplicationContext(), config);
         if (result != 0) {
-            Log.e("MyApp", "AgentSDK initialization failed: " + result);
+            Log.e("MyApp", "SDK initialization failed: " + result);
         }
     }
 }
@@ -82,11 +81,10 @@ The `initialize` method returns `0` on success or a negative error code on failu
 
 | Parameter | Description |
 |-----------|-------------|
-| `Config.Builder().accessKeyID(...)` | AccessKey ID (required), obtained from the console |
-| `Config.Builder().accessKeySecret(...)` | AccessKey Secret (required), obtained from the console |
-| `Config.Builder().edgeAddresses(...)` | List of Edge node addresses (required); pass a `String[]`; at least 1, 2+ recommended |
-| `Config.Builder().dnsConfig(...)` | DNS configuration (optional); construct via `Config.DnsConfig.DnsBuilder`. Whitelist domains for EdgeDoH via `addEdgeDohResolveDomain(String)` (or bulk `edgeDohResolveDomains(String[])`); exempt specific domains via `addEdgeDohBypassDomain(String)` (bypass takes priority over whitelist). Patterns are exact or `*.suffix` wildcards. **Without a whitelist, all domains resolve via the system DNS** — explicitly add domains you want to protect via EdgeDoH. |
-| `Config.Builder().secureProxyEnabled(...)` | Encrypted tunnel toggle (optional); enabled by default; pass `false` to disable |
+| `AXConfig.Builder().accessKey(...)` | AccessKey ID and Secret (required), obtained from the console |
+| `AXConfig.Builder().edgeNodes(...)` | List of Edge node addresses (required); pass a `String[]`; at least 1, 2+ recommended |
+| `AXConfig.Builder().dns(...)` | DNS configuration (optional); construct via `AXConfig.DnsConfig.Builder`. Whitelist domains for EdgeDoH via `addEdgeDohResolveDomain(String)` (or bulk `edgeDohResolveDomains(String[])`); exempt specific domains via `addEdgeDohBypassDomain(String)` (bypass takes priority over whitelist). Patterns are exact or `*.suffix` wildcards. **Without a whitelist, all domains resolve via the system DNS** — explicitly add domains you want to protect via EdgeDoH. |
+| `AXConfig.Builder().secureProxyEnabled(...)` | Encrypted tunnel toggle (optional); enabled by default; pass `false` to disable |
 
 For full parameter semantics, constraints, and default behavior, see Appendix A of the integration guide.
 
@@ -98,13 +96,13 @@ For full parameter semantics, constraints, and default behavior, see Appendix A 
 String requestHost = "your.server.domain";
 int requestPort = 7000;
 
-LocalProxy localProxy = AXService.getLocalTCPProxy(requestHost, requestPort);
+AXLocalProxy localProxy = AXService.getLocalTCPProxy(requestHost, requestPort);
 if (localProxy == null) {
     // SDK not ready — check initialization result or retry later
     return;
 }
 
-Socket socket = new Socket(localProxy.getServerIp(), localProxy.getServerPort());
+Socket socket = new Socket(localProxy.getIp(), localProxy.getPort());
 // read or write data via socket
 ```
 
@@ -116,21 +114,21 @@ In addition to per-host TCP proxy, `AXService` exposes a local HTTP proxy and a 
 String demoURL = "https://your.server.domain/";
 
 // HTTP proxy — use Proxy.Type.HTTP
-LocalProxy http = AXService.getLocalHTTPProxy();
+AXLocalProxy http = AXService.getLocalHTTPProxy();
 if (http == null) { /* SDK not ready */ return; }
 Proxy httpProxy = new Proxy(Proxy.Type.HTTP,
-        new InetSocketAddress(http.getServerIp(), http.getServerPort()));
+        new InetSocketAddress(http.getIp(), http.getPort()));
 HttpURLConnection c1 = (HttpURLConnection) new URL(demoURL).openConnection(httpProxy);
 
 // SOCKS5 proxy — use Proxy.Type.SOCKS (HttpURLConnection speaks SOCKS5 via this type)
-LocalProxy socks5 = AXService.getLocalSocks5Proxy();
+AXLocalProxy socks5 = AXService.getLocalSocks5Proxy();
 if (socks5 == null) { /* SDK not ready */ return; }
 Proxy socksProxy = new Proxy(Proxy.Type.SOCKS,
-        new InetSocketAddress(socks5.getServerIp(), socks5.getServerPort()));
+        new InetSocketAddress(socks5.getIp(), socks5.getPort()));
 HttpURLConnection c2 = (HttpURLConnection) new URL(demoURL).openConnection(socksProxy);
 ```
 
-A runnable end-to-end example that wires both endpoints to buttons is available in [`axsecurity-demo/MainActivity.java`](axsecurity-demo/src/main/java/com/axsecurity/sdk/service/demo/MainActivity.java) — uncomment the `*** UNCOMMENT ... FOR AgentSDK ***` blocks after you finish initializing the SDK.
+A runnable end-to-end example that wires both endpoints to buttons is available in [`axsecurity-demo/MainActivity.java`](axsecurity-demo/src/main/java/com/axsecurity/sdk/service/demo/MainActivity.java) — uncomment the `*** UNCOMMENT ... FOR SDK ***` blocks after you finish initializing the SDK.
 
 ### DNS Helpers
 
@@ -148,7 +146,7 @@ AXService.clearDNSCache(); // invalidate cached entries if needed
 `AXService.getLocalTCPProxy()` (and the other `getLocal...Proxy` variants) return `null` when the SDK is not initialized or the local proxy is not available. Always check the return value before opening a socket:
 
 ```java
-LocalProxy localProxy = AXService.getLocalTCPProxy(requestHost, requestPort);
+AXLocalProxy localProxy = AXService.getLocalTCPProxy(requestHost, requestPort);
 if (localProxy == null) {
     // SDK not ready — check initialization result or retry later
     return;
@@ -159,7 +157,7 @@ Network errors on the resulting socket are reported as standard Java `IOExceptio
 
 ```java
 try {
-    Socket socket = new Socket(localProxy.getServerIp(), localProxy.getServerPort());
+    Socket socket = new Socket(localProxy.getIp(), localProxy.getPort());
     // ... read/write ...
 } catch (IOException e) {
     // network error — check connectivity and retry if appropriate
@@ -171,13 +169,13 @@ try {
 After integrating the SDK, run your app and check Logcat for the `AXService` tag. On a successful integration you should see:
 
 1. No error logs from `AXService` during initialization.
-2. `getLocalTCPProxy()` returning a non-null `LocalProxy` with a loopback IP and a non-zero port.
+2. `getLocalTCPProxy()` returning a non-null `AXLocalProxy` with a loopback IP and a non-zero port.
 3. Socket connections to that proxy endpoint succeeding and returning expected responses from your server.
 
 If something is wrong, look for these common issues:
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| `initialize` returns a negative value | Invalid credentials or unreachable Edge | Verify `accessKeyID`, `accessKeySecret`, and `edgeAddresses` |
+| `initialize` returns a negative value | Invalid credentials or unreachable Edge | Verify `accessKeyId`, `accessKeySecret`, and `edgeNodes` |
 | `getLocalTCPProxy()` returns `null` | SDK not initialized or proxy not ready | Ensure `initialize` returned `0` before calling `getLocalTCPProxy()` |
 | `Local TCP proxy not available` in Logcat | Internal proxy failed to start | Check network permissions and Edge connectivity |

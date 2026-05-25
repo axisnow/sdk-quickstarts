@@ -1,12 +1,12 @@
-# AgentSDK Quickstart: Android Java Retrofit
+# SDK Quickstart: Android Java Retrofit
 
 English | [简体中文](./README.md)
 
-This quickstart is written specifically for native Android apps that are written in Java and use Retrofit for making the API calls that you wish to protect with AgentSDK. If this is not your situation then check if there is a more relevant quickstart guide available.
+This quickstart is written specifically for native Android apps that are written in Java and use Retrofit for making the API calls that you wish to protect with SDK. If this is not your situation then check if there is a more relevant quickstart guide available.
 
-This page provides all the steps for integrating AgentSDK into your app. Additionally, a step-by-step tutorial guide using our [java-retrofit-demo](java-retrofit-demo/) is also available.
+This page provides all the steps for integrating SDK into your app. Additionally, a step-by-step tutorial guide using our [java-retrofit-demo](java-retrofit-demo/) is also available.
 
-## Adding AgentSDK Service Dependency
+## Adding SDK Service Dependency
 
 Add the dependency in your app's `build.gradle`:
 
@@ -27,24 +27,25 @@ app/
 
 ## Manifest Changes
 
-The following app permissions need to be available in the manifest to use AgentSDK:
+The following app permissions need to be available in the manifest to use SDK:
 
 ```xml
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 <uses-permission android:name="android.permission.INTERNET" />
 ```
-Note that the minimum SDK version you can use with the AgentSDK package is 21 (Android 5.0).
+Note that the minimum SDK version you can use with the SDK package is 21 (Android 5.0).
 
-## Initializing AXHTTPService
+## Initializing SDK
 
-In order to use the `AXHTTPService` you must initialize it when your app is created, usually in the `onCreate` method:
+In order to use SDK you must initialize it when your app is created, usually in the `onCreate` method:
 
 ```java
 import android.app.Application;
 import android.util.Log;
 
 import com.axsecurity.sdk.axhttp.retrofit.AXHTTPService;
-import com.axsecurity.sdk.base.Config;
+import com.axsecurity.sdk.base.AXConfig;
+import com.axsecurity.sdk.service.AXService;
 
 public class MyApplication extends Application {
 
@@ -52,19 +53,18 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        String accessKeyID = "your accessKeyID from SDK Deployment";
+        String accessKeyId = "your accessKeyId from SDK Deployment";
         String accessKeySecret = "your accessKeySecret from SDK Deployment";
-        String[] edgeAddresses = {"edge IP"};
+        String[] edgeNodes = {"edge IP"};
 
-        Config config = new Config.Builder()
-            .accessKeyID(accessKeyID)
-            .accessKeySecret(accessKeySecret)
-            .edgeAddresses(edgeAddresses)
+        AXConfig config = new AXConfig.Builder()
+            .accessKey(accessKeyId, accessKeySecret)
+            .edgeNodes(edgeNodes)
             .build();
 
-        int result = AXHTTPService.initialize(this.getApplicationContext(), config);
+        int result = AXService.initialize(this.getApplicationContext(), config);
         if (result != 0) {
-            Log.e("MyApp", "AgentSDK initialization failed: " + result);
+            Log.e("MyApp", "SDK initialization failed: " + result);
         }
     }
 }
@@ -72,17 +72,16 @@ public class MyApplication extends Application {
 
 The `initialize` method returns `0` on success or a negative error code on failure:
 
-> **Important:** `initialize` must be called exactly once before any other `AXHTTPService` method. Calling it more than once is not supported.
+> **Important:** `AXService.initialize` must be called exactly once before any `AXHTTPService` method. Calling it more than once is not supported.
 
 ## Parameter Reference
 
 | Parameter | Description |
 |-----------|-------------|
-| `Config.Builder().accessKeyID(...)` | AccessKey ID (required), obtained from the console |
-| `Config.Builder().accessKeySecret(...)` | AccessKey Secret (required), obtained from the console |
-| `Config.Builder().edgeAddresses(...)` | List of Edge node addresses (required); pass a `String[]`; at least 1, 2+ recommended |
+| `AXConfig.Builder().accessKey(...)` | AccessKey ID and Secret (required), obtained from the console |
+| `AXConfig.Builder().edgeNodes(...)` | List of Edge node addresses (required); pass a `String[]`; at least 1, 2+ recommended |
 
-This demo uses the minimum required fields. The full `Config.Builder` option set (DNS configuration, encrypted tunnel toggle, etc.) and parameter semantics are documented in the AgentSDK integration guide.
+This demo uses the minimum required fields. The full `AXConfig.Builder` option set (DNS configuration, encrypted tunnel toggle, etc.) and parameter semantics are documented in the SDK integration guide.
 
 ## Using AXHTTPService
 
@@ -105,7 +104,7 @@ public class ClientInstance {
 }
 ```
 
-This returns a cached `Retrofit` instance with AgentSDK's local proxy automatically configured. Use this instance for all API calls that you wish to protect.
+This returns a cached `Retrofit` instance with SDK's local proxy automatically configured. Use this instance for all API calls that you wish to protect.
 
 > **Note:** Cache the returned `Retrofit` instance rather than the `Retrofit.Builder`. `AXHTTPService.getRetrofit` caches internally by builder reference identity, so passing a freshly constructed builder on each call leaks entries for the lifetime of the process.
 
@@ -187,6 +186,6 @@ If something is wrong, look for these common issues:
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| `initialize` returns `-1` | Invalid credentials or unreachable Edge | Verify `accessKeyID`, `accessKeySecret`, and `edgeAddresses` |
+| `initialize` returns `-1` | Invalid credentials or unreachable Edge | Verify `accessKeyId`, `accessKeySecret`, and `edgeNodes` |
 | `getRetrofit()` returns `null` | SDK not initialized or proxy not ready | Ensure `initialize` returned `0` before calling `getRetrofit()` |
 | `Local HTTP proxy not available` in Logcat | Internal proxy failed to start | Check network permissions and Edge connectivity |

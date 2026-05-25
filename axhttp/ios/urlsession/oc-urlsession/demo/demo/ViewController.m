@@ -6,7 +6,8 @@
 //
 
 #import "ViewController.h"
-// *** UNCOMMENT THE LINE BELOW FOR AXNSURLSession ***
+// *** UNCOMMENT THE LINES BELOW FOR AXNSURLSession ***
+// #import <AXSecurity/axsecurity.h>
 // #import <AXSecurityNSURLSession/AXNSURLSessionHeader.h>
 
 @interface ViewController ()
@@ -25,14 +26,14 @@ NSString* helloEndpoint = @"https://example.com";
 
     NSString* hostWithPort = nil;
 
-    // *** UNCOMMENT THE LINE BELOW FOR AXNSURLSession ***
+    // *** UNCOMMENT THE LINES BELOW FOR AXNSURLSession ***
     // NSString* accessKeyID=@"your accessKeyID of SDK Deployment";
     // NSString* accessKeySecret=@"your accessKeyID of SDK Deployment";
     // AXConfig *config = [[AXConfig alloc] init];
-    // config.accessKeyId = accessKeyID;
+    // config.accessKeyID = accessKeyID;
     // config.accessKeySecret = accessKeySecret;
-    // config.edgeAddresses = @[@"your accessKeyID of SDK Deployment"];
-    // int r = [AXNSURLSessionService  Initialize:config];
+    // config.edgeNodes = @[@"your accessKeyID of SDK Deployment"];
+    // int r = [AXService initialize:config];
     // if (r != 0) {
     //     NSLog(@"Initialize failed, code %d", r);
     // }

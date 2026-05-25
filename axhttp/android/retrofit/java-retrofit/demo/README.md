@@ -1,12 +1,12 @@
-# AgentSDK Quickstart：Android Java Retrofit
+# SDK Quickstart：Android Java Retrofit
 
 [English](./README.en.md) | 简体中文
 
-本快速接入文档面向使用 Java 开发、并通过 Retrofit 发起需要 AgentSDK 保护的 API 调用的原生 Android 应用。如果你的场景不符，请查看其他更适合的快速接入文档。
+本快速接入文档面向使用 Java 开发、并通过 Retrofit 发起需要 SDK 保护的 API 调用的原生 Android 应用。如果你的场景不符，请查看其他更适合的快速接入文档。
 
-本页提供了将 AgentSDK 集成到你的应用中的全部步骤。此外，我们还提供了基于 [java-retrofit-demo](java-retrofit-demo/) 的分步教程示例。
+本页提供了将 SDK 集成到你的应用中的全部步骤。此外，我们还提供了基于 [java-retrofit-demo](java-retrofit-demo/) 的分步教程示例。
 
-## 添加 AgentSDK 服务依赖
+## 添加 SDK 服务依赖
 
 在应用的 `build.gradle` 中添加依赖：
 
@@ -33,18 +33,19 @@ app/
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 <uses-permission android:name="android.permission.INTERNET" />
 ```
-注意，AgentSDK 支持的最低 SDK 版本为 21（Android 5.0）。
+注意，SDK 支持的最低 SDK 版本为 21（Android 5.0）。
 
-## 初始化 AXHTTPService
+## 初始化 SDK
 
-使用 `AXHTTPService` 前，必须在应用创建时完成初始化，通常放在 `onCreate` 方法中：
+使用 SDK 前，必须在应用创建时完成初始化，通常放在 `onCreate` 方法中：
 
 ```java
 import android.app.Application;
 import android.util.Log;
 
 import com.axsecurity.sdk.axhttp.retrofit.AXHTTPService;
-import com.axsecurity.sdk.base.Config;
+import com.axsecurity.sdk.base.AXConfig;
+import com.axsecurity.sdk.service.AXService;
 
 public class MyApplication extends Application {
 
@@ -52,19 +53,18 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        String accessKeyID = "your accessKeyID from SDK Deployment";
+        String accessKeyId = "your accessKeyId from SDK Deployment";
         String accessKeySecret = "your accessKeySecret from SDK Deployment";
-        String[] edgeAddresses = {"edge IP"};
+        String[] edgeNodes = {"edge IP"};
 
-        Config config = new Config.Builder()
-            .accessKeyID(accessKeyID)
-            .accessKeySecret(accessKeySecret)
-            .edgeAddresses(edgeAddresses)
+        AXConfig config = new AXConfig.Builder()
+            .accessKey(accessKeyId, accessKeySecret)
+            .edgeNodes(edgeNodes)
             .build();
 
-        int result = AXHTTPService.initialize(this.getApplicationContext(), config);
+        int result = AXService.initialize(this.getApplicationContext(), config);
         if (result != 0) {
-            Log.e("MyApp", "AgentSDK initialization failed: " + result);
+            Log.e("MyApp", "SDK initialization failed: " + result);
         }
     }
 }
@@ -72,17 +72,16 @@ public class MyApplication extends Application {
 
 `initialize` 方法成功时返回 `0`，失败时返回负数错误码。
 
-> **重要提示：** `initialize` 必须在调用任何其他 `AXHTTPService` 方法之前**仅调用一次**，不支持多次调用。
+> **重要提示：** `AXService.initialize` 必须在调用任何 `AXHTTPService` 方法之前**仅调用一次**，不支持多次调用。
 
 ## 参数说明
 
 | 参数 | 说明 |
 |------|------|
-| `Config.Builder().accessKeyID(...)` | AccessKey ID（必填），从控制台获取 |
-| `Config.Builder().accessKeySecret(...)` | AccessKey Secret（必填），从控制台获取 |
-| `Config.Builder().edgeAddresses(...)` | Edge 节点地址列表（必填），传入 `String[]`，至少 1 个，推荐 2+ |
+| `AXConfig.Builder().accessKey(...)` | AccessKey ID 与 Secret（必填），从控制台获取 |
+| `AXConfig.Builder().edgeNodes(...)` | Edge 节点地址列表（必填），传入 `String[]`，至少 1 个，推荐 2+ |
 
-本 demo 仅使用上述最小必填字段。`Config.Builder` 的完整选项（DNS 配置、加密隧道开关等）以及参数语义详见 AgentSDK 接入指南。
+本 demo 仅使用上述最小必填字段。`AXConfig.Builder` 的完整选项（DNS 配置、加密隧道开关等）以及参数语义详见 SDK 接入指南。
 
 ## 使用 AXHTTPService
 
@@ -105,7 +104,7 @@ public class ClientInstance {
 }
 ```
 
-该方法返回的 `Retrofit` 实例已自动配置 AgentSDK 本地代理并被缓存。所有需要保护的 API 调用都应使用这个实例。
+该方法返回的 `Retrofit` 实例已自动配置 SDK 本地代理并被缓存。所有需要保护的 API 调用都应使用这个实例。
 
 > **注意：** 需要缓存返回的 `Retrofit` 实例，而不是 `Retrofit.Builder`。`AXHTTPService.getRetrofit` 内部按 builder 引用身份缓存，每次传入新构造的 builder 会使缓存条目在进程生命周期内持续累积。
 
@@ -187,6 +186,6 @@ apiService.getResource().enqueue(new Callback<Resource>() {
 
 | 现象 | 原因 | 解决方案 |
 |------|------|---------|
-| `initialize` 返回 `-1` | 凭证错误或 Edge 不可达 | 检查 `accessKeyID`、`accessKeySecret` 和 `edgeAddresses` 是否正确 |
+| `initialize` 返回 `-1` | 凭证错误或 Edge 不可达 | 检查 `accessKeyId`、`accessKeySecret` 和 `edgeNodes` 是否正确 |
 | `getRetrofit()` 返回 `null` | SDK 未初始化或代理未就绪 | 确保 `initialize` 返回 `0` 后再调用 `getRetrofit()` |
 | Logcat 出现 `Local HTTP proxy not available` | 内部代理启动失败 | 检查网络权限和 Edge 连通性 |
