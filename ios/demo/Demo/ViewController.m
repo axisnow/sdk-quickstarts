@@ -1,15 +1,10 @@
 #import "ViewController.h"
-#import <arpa/inet.h>
-#import <netdb.h>
-#import <netinet/in.h>
-#import <sys/socket.h>
-#import <unistd.h>
 
-// TODO: Uncomment to use AXSecurity SDK (see README.md for setup)
+// *** UNCOMMENT THE LINE BELOW FOR SDK ***
 // #import <AXSecurity/axsecurity.h>
 
 @interface ViewController ()
-@property(nonatomic, strong) UILabel *log;
+@property(nonatomic, strong) UITextView *log;
 @property(nonatomic, strong) UIButton *button;
 @end
 
@@ -18,91 +13,96 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    // TODO: Initialize AXService here (see README.md)
-
     self.view.backgroundColor = UIColor.whiteColor;
 
-    self.log = [[UILabel alloc]
-        initWithFrame:CGRectMake(0, 0, self.view.frame.size.width / 2.0, self.view.frame.size.height / 2.0)];
-    self.log.text = @"";
-    self.log.textColor = UIColor.blackColor;
-    self.log.center = CGPointMake(self.view.frame.size.width / 2.0, self.view.frame.size.height / 2.0);
-    [self.view addSubview:self.log];
+    CGFloat viewW = self.view.frame.size.width;
+    CGFloat viewH = self.view.frame.size.height;
+    CGFloat pad = 12;
+    CGFloat topInset = 60;
+    CGFloat btnW = viewW / 3.0;
+    CGFloat btnH = 60;
 
     self.button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    self.button.frame = CGRectMake(100, 100, 150, 80);
-    self.button.backgroundColor = [UIColor yellowColor];
-    self.button.titleLabel.font = [UIFont systemFontOfSize:24];
-    [self.button setTitle:@"Request" forState:UIControlStateNormal];
+    self.button.frame = CGRectMake(pad, topInset, btnW, btnH);
+    self.button.backgroundColor = [UIColor cyanColor];
+    self.button.titleLabel.font = [UIFont systemFontOfSize:20];
+    [self.button setTitle:@"HTTP Request" forState:UIControlStateNormal];
     [self.button addTarget:self action:@selector(request:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.button];
+
+    CGFloat logX = pad + btnW + pad;
+    CGFloat logW = viewW - logX - pad;
+    CGFloat logH = viewH - topInset - pad;
+    self.log = [[UITextView alloc] initWithFrame:CGRectMake(logX, topInset, logW, logH)];
+    self.log.editable = NO;
+    self.log.font = [UIFont systemFontOfSize:14];
+    self.log.textColor = UIColor.blackColor;
+    self.log.backgroundColor = [UIColor colorWithWhite:0.96 alpha:1.0];
+    self.log.layer.borderColor = [UIColor colorWithWhite:0.85 alpha:1.0].CGColor;
+    self.log.layer.borderWidth = 1.0;
+    self.log.layer.cornerRadius = 6.0;
+    self.log.text = @"";
+    [self.view addSubview:self.log];
 }
 
 - (void)request:(UIButton *)btn {
     [self.log setText:@"requesting..."];
-    [self sendPing];
+    [self sendHTTPRequest];
 }
 
-- (void)sendPing {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      NSString *requestHost = @"your-request-domain";
-      int requestPort = 7000;
+- (void)sendHTTPRequest {
+    NSString *urlString = @"https://your.server.domain/your/path";
 
-      // TODO: Use AXService to get local proxy address (see README.md)
-      // AXLocalProxy *localProxy = [AXService getLocalTCPProxy:requestHost port:requestPort];
-      // if (localProxy == nil) { return; }
-      // requestHost = localProxy.ip;
-      // requestPort = localProxy.port;
+    // *** COMMENT THE LINE BELOW FOR SDK ***
+    NSURLSessionConfiguration *cfg = [NSURLSessionConfiguration defaultSessionConfiguration];
 
-      struct addrinfo hints, *pinfo;
-      memset(&hints, 0, sizeof hints);
-      hints.ai_family = AF_INET;
-      hints.ai_socktype = SOCK_STREAM;
-      NSString *requestPortStr = [NSString stringWithFormat:@"%d", requestPort];
-      int status = getaddrinfo([requestHost UTF8String], [requestPortStr UTF8String], &hints, &pinfo);
-      if (status != 0) {
-          [self.log setText:[NSString stringWithFormat:@"getaddrinfo: %s", gai_strerror(status)]];
-          return;
-      }
+    // *** UNCOMMENT THE LINES BELOW FOR SDK ***
+    // AXLocalProxy *httpProxy = [AXService getLocalHTTPProxy];
+    // if (httpProxy == nil) {
+    //     [self.log setText:@"get http proxy address error"];
+    //     return;
+    // }
+    // NSURLSessionConfiguration *cfg = [NSURLSessionConfiguration defaultSessionConfiguration];
+    // cfg.connectionProxyDictionary = @{
+    //     @"HTTPEnable"  : @YES,
+    //     @"HTTPProxy"   : httpProxy.ip,
+    //     @"HTTPPort"    : @(httpProxy.port),
+    //     @"HTTPSEnable" : @YES,
+    //     @"HTTPSProxy"  : httpProxy.ip,
+    //     @"HTTPSPort"   : @(httpProxy.port),
+    // };
 
-      int socketFD = socket(AF_INET, SOCK_STREAM, 0);
-      if (socketFD == -1) {
-          freeaddrinfo(pinfo);
-          [self.log setText:[NSString stringWithFormat:@"create socket error: %s", strerror(errno)]];
-          return;
-      }
-      if (connect(socketFD, pinfo->ai_addr, pinfo->ai_addrlen) == -1) {
-          close(socketFD);
-          freeaddrinfo(pinfo);
-          [self.log setText:[NSString stringWithFormat:@"connect error: %s", strerror(errno)]];
-          return;
-      }
-      freeaddrinfo(pinfo);
+    cfg.timeoutIntervalForRequest = 10;
+    cfg.timeoutIntervalForResource = 10;
 
-      NSString *message = @"ping";
-      NSData *data = [message dataUsingEncoding:NSUTF8StringEncoding];
-      ssize_t bytesSent = send(socketFD, [data bytes], [data length], 0);
-      if (bytesSent == -1) {
-          [self.log setText:[NSString stringWithFormat:@"send error: %s", strerror(errno)]];
-          close(socketFD);
-          return;
-      }
-      [self.log setText:[NSString stringWithFormat:@"sent: %@", message]];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:cfg];
+    NSURL *url = [NSURL URLWithString:urlString];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
 
-      uint8_t buffer[1024];
-      memset(buffer, 0, sizeof(buffer));
-      ssize_t bytesRead = recv(socketFD, buffer, sizeof(buffer) - 1, 0);
-      if (bytesRead == -1) {
-          [self.log setText:[NSString stringWithFormat:@"recv error: %s", strerror(errno)]];
-      } else if (bytesRead == 0) {
-          [self.log setText:@"connection closed by server"];
-      } else {
-          NSString *response = [[NSString alloc] initWithBytes:buffer length:bytesRead encoding:NSUTF8StringEncoding];
-          [self.log setText:[NSString stringWithFormat:@"received: %@", response]];
-      }
-
-      close(socketFD);
-    });
+    __weak typeof(self) weakSelf = self;
+    NSURLSessionDataTask *task =
+        [session dataTaskWithRequest:request
+                   completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                     NSString *message;
+                     if (error != nil) {
+                         message = [NSString stringWithFormat:@"http request error: %@", error.localizedDescription];
+                     } else {
+                         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+                         long code = httpResponse.statusCode;
+                         if (code == 200) {
+                             NSString *body = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                             message = [NSString stringWithFormat:@"%ld: %@", code, body ?: @"(empty)"];
+                         } else {
+                             NSString *reason = [NSHTTPURLResponse localizedStringForStatusCode:code];
+                             message = [NSString stringWithFormat:@"%ld: %@", code, reason];
+                         }
+                     }
+                     NSLog(@"%@: %@", url, message);
+                     dispatch_async(dispatch_get_main_queue(), ^{
+                       [weakSelf.log setText:message];
+                     });
+                   }];
+    [task resume];
 }
 
 @end

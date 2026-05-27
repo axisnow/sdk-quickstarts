@@ -2,7 +2,7 @@
 
 English | [简体中文](./README.md)
 
-This quickstart is written specifically for native iOS apps that are written in ObjectiveC and make TCP / socket-level API calls that you wish to protect with SDK. If this is not your situation then check if there is a more relevant quickstart guide available.
+This quickstart is written specifically for native iOS apps that are written in ObjectiveC and make HTTP API calls via `NSURLSession` that you wish to protect with SDK. If this is not your situation then check if there is a more relevant quickstart guide available.
 
 This page provides all the steps for integrating SDK into your app. Additionally, a step-by-step tutorial guide using our [ios-demo](./Demo/) is also available.
 
@@ -44,7 +44,11 @@ In order to use `AXService` you must initialize it when your app is created, usu
     AXConfig *config = [[AXConfig alloc] init];
     config.accessKeyID     = @"your accessKeyID from SDK Deployment";
     config.accessKeySecret = @"your accessKeySecret from SDK Deployment";
-    config.edgeNodes   = @[ @"edge IP or hostname" ];
+    config.edgeNodes       = @[ @"edge IP or hostname" ];
+
+    AXProxyConfig *proxy = [[AXProxyConfig alloc] init];
+    proxy.secureProxyEnabled = YES;
+    config.proxy = proxy;
 
     int r = [AXService initialize:config];
     if (r != 0) {
@@ -67,58 +71,53 @@ In order to use `AXService` you must initialize it when your app is created, usu
 | `AXConfig.accessKeyID` | AccessKey ID (required), obtained from the console |
 | `AXConfig.accessKeySecret` | AccessKey Secret (required), obtained from the console |
 | `AXConfig.edgeNodes` | List of Edge node addresses (required); `NSArray<NSString *>`; at least 1, 2+ recommended |
-| `AXConfig.dns` | DNS configuration (optional); construct via `AXDNSConfig`. Whitelist hosts for EdgeDoH via `-addEdgeDohResolveDomain:` (or assign `edgeDohResolveDomains` directly); exempt specific hosts via `-addEdgeDohBypassDomain:` (bypass takes priority over the whitelist). Patterns are exact or `*.suffix` wildcards. **Without a whitelist, all hosts resolve via the OS DNS resolver** — explicitly add hosts you want to protect via EdgeDoH. |
-| `AXConfig.secureProxyEnabled` | Encrypted tunnel toggle (optional); enabled by default; set `NO` to disable |
+| `AXConfig.proxy` | Proxy configuration (optional); construct via `AXProxyConfig`. `AXProxyConfig.secureProxyEnabled` toggles the encrypted tunnel — set `NO` to disable. |
+| `AXConfig.dns` | DNS configuration (optional); construct via `AXDNSConfig`. Assign `edgeDohResolveDomains` with an array to whitelist hosts for EdgeDoH; assign `edgeDohBypassDomains` to exempt specific hosts (bypass takes priority over the whitelist). Patterns are exact or `*.suffix` wildcards. **Without a whitelist, all hosts resolve via the OS DNS resolver** — explicitly add hosts you want to protect via EdgeDoH. |
 
 For full parameter semantics, constraints, and default behavior, see Appendix A of the integration guide.
 
 ## Using AXService
 
-`AXService` provides the `getLocalTCPProxy:host:port:` API to obtain the local proxy endpoint corresponding to a given target host and port. Connect to the returned IP/port using standard POSIX sockets (or `NSStream`, `CFSocket`, etc.) and the SDK will transparently forward your traffic through the protected channel.
+`AXService` exposes `getLocalHTTPProxy`, which returns the local HTTP proxy endpoint hosted by the SDK. Wire that endpoint into `NSURLSessionConfiguration.connectionProxyDictionary` and any HTTP/HTTPS request issued by the `NSURLSession` will be transparently forwarded through SDK's protected channel — no changes to your request code required.
 
 ```objc
-NSString *requestHost = @"your.server.domain";
-int       requestPort = 7000;
-
-AXLocalProxy proxy;
-int res = [AXService getLocalTCPProxy:&proxy host:requestHost port:requestPort];
-if (res < 0) {
+AXLocalProxy *httpProxy = [AXService getLocalHTTPProxy];
+if (httpProxy == nil) {
     // SDK not ready — check initialization result or retry later
     return;
 }
 
-int sockFD = socket(AF_INET, SOCK_STREAM, 0);
-if (sockFD < 0) {
-    return;
-}
+NSURLSessionConfiguration *cfg = [NSURLSessionConfiguration defaultSessionConfiguration];
+cfg.connectionProxyDictionary = @{
+    @"HTTPEnable"  : @YES,
+    @"HTTPProxy"   : httpProxy.ip,
+    @"HTTPPort"    : @(httpProxy.port),
+    @"HTTPSEnable" : @YES,
+    @"HTTPSProxy"  : httpProxy.ip,
+    @"HTTPSPort"   : @(httpProxy.port),
+};
 
-struct sockaddr_in addr;
-memset(&addr, 0, sizeof(addr));
-addr.sin_family = AF_INET;
-addr.sin_port   = htons(proxy.port);
-inet_pton(AF_INET, proxy.ip, &addr.sin_addr);
+NSURLSession *session = [NSURLSession sessionWithConfiguration:cfg];
 
-if (connect(sockFD, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-    close(sockFD);
-    return;
-}
-
-// read or write data via sockFD ...
+NSURL *url = [NSURL URLWithString:@"https://your.server.domain/your/path"];
+NSURLSessionDataTask *task =
+    [session dataTaskWithRequest:[NSURLRequest requestWithURL:url]
+               completionHandler:^(NSData *data, NSURLResponse *resp, NSError *error) {
+                 // handle response ...
+               }];
+[task resume];
 ```
+
+> **Tip:** `connectionProxyDictionary` only affects this specific `NSURLSession`; it does not pollute shared `NSURLSessionConfiguration` instances or global proxy settings. Create separate sessions per use case if needed.
 
 ### Other Proxy Endpoints
 
-In addition to per-host TCP proxy, `AXService` exposes:
+In addition to the HTTP proxy, `AXService` also exposes:
 
 ```objc
-AXLocalProxy http;
-[AXService getLocalHTTPProxy:&http];    // local HTTP proxy endpoint
-
-AXLocalProxy socks5;
-[AXService getLocalSocks5Proxy:&socks5]; // local SOCKS5 proxy endpoint
+AXLocalProxy *socks5 = [AXService getLocalSocks5Proxy];
+// Local SOCKS5 proxy endpoint for clients that speak SOCKS5
 ```
-
-Use these if you need to route a custom HTTP client or an arbitrary TCP client through the SDK as a system-style proxy.
 
 ### DNS Helpers
 
@@ -133,23 +132,21 @@ NSArray<NSString *> *v6 = [AXService getIPv6sForHost:@"your.server.domain"];
 
 ## Error Handling
 
-`[AXService getLocalTCPProxy:host:port:]` (and the other `getLocal...Proxy:` variants) return a negative status when the SDK is not initialized or the local proxy is not available. Always check the return value before opening a socket:
+`[AXService getLocalHTTPProxy]` (and the other `getLocal...Proxy` variants) return `nil` when the SDK is not initialized or the local proxy is not available. Always check for `nil` before configuring `NSURLSession`:
 
 ```objc
-AXLocalProxy proxy;
-int res = [AXService getLocalTCPProxy:&proxy host:requestHost port:requestPort];
-if (res < 0) {
+AXLocalProxy *httpProxy = [AXService getLocalHTTPProxy];
+if (httpProxy == nil) {
     // SDK not ready — check initialization result or retry later
     return;
 }
 ```
 
-Network errors on the resulting socket are surfaced through the standard POSIX `errno` / `strerror(errno)` mechanism. Handle them as you normally would:
+Per-request network errors are delivered through the `NSError *error` parameter of the `NSURLSession` completion handler. Handle them as you normally would:
 
 ```objc
-if (connect(sockFD, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-    NSLog(@"connect error: %s", strerror(errno));
-    close(sockFD);
+if (error != nil) {
+    NSLog(@"http request error: %@", error.localizedDescription);
     return;
 }
 ```
@@ -159,13 +156,13 @@ if (connect(sockFD, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
 After integrating the SDK, run your app and watch the Xcode console for the `[AXService]` tag. On a successful integration you should see:
 
 1. No error logs from `[AXService initialize:]` during app launch.
-2. `getLocalTCPProxy:host:port:` returning `0` with a loopback IP and a non-zero port in `AXLocalProxy`.
-3. Socket connections to that proxy endpoint succeeding and returning expected responses from your server.
+2. `getLocalHTTPProxy` returning a non-nil object whose `ip` is a loopback address and `port` is non-zero.
+3. `NSURLSession` requests issued through that proxy returning the expected response from your server (e.g. `200 OK`).
 
 If something is wrong, look for these common issues:
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
 | `initialize:` returns a negative value | Invalid credentials or unreachable Edge | Verify `accessKeyID`, `accessKeySecret`, and `edgeNodes` |
-| `getLocalTCPProxy:host:port:` returns a negative value | SDK not initialized or proxy not ready | Ensure `initialize:` returned `0` before calling the proxy APIs |
-| Connections time out or fail with `ECONNREFUSED` | Internal proxy failed to start | Check `initialize:` return code and Edge connectivity |
+| `getLocalHTTPProxy` returns `nil` | SDK not initialized or proxy not ready | Ensure `initialize:` returned `0` before calling the proxy APIs |
+| Requests time out or fail with `Could not connect to the server` | Internal proxy failed to start | Check `initialize:` return code and Edge connectivity |

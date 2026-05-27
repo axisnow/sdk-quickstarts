@@ -23,9 +23,8 @@ public class MyApplication extends Application {
         //     .accessKey(accessKeyId, accessKeySecret)
         //     .edgeNodes(edgeNodes)
         //     .dns(new AXConfig.DnsConfig.Builder()
-        //         .addEdgeDohResolveDomain("*.example.com")
+        //         .edgeDohResolveDomains("*.example.com")
         //         .build())
-        //     .secureProxyEnabled(true)
         //     .build();
         //
         // s_initResult = (AXService.initialize(this.getApplicationContext(), config) == 0);

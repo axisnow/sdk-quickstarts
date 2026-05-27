@@ -2,7 +2,7 @@
 
 [English](./README.en.md) | 简体中文
 
-本快速接入指南面向使用 ObjectiveC 编写、通过 TCP / Socket 层发起 API 请求的原生 iOS 应用，帮助你为这些请求接入 SDK 的保护能力。如果你的场景与此不符，请查阅更贴近的接入指南。
+本快速接入指南面向使用 ObjectiveC 编写、通过 `NSURLSession` 发起 HTTP API 请求的原生 iOS 应用，帮助你为这些请求接入 SDK 的保护能力。如果你的场景与此不符，请查阅更贴近的接入指南。
 
 本页列出了完整的接入步骤；同时我们在 [ios-demo](./Demo/) 中提供了一份手把手的教程示例。
 
@@ -44,7 +44,11 @@ YourApp/
     AXConfig *config = [[AXConfig alloc] init];
     config.accessKeyID     = @"SDK 部署时获得的 accessKeyID";
     config.accessKeySecret = @"SDK 部署时获得的 accessKeySecret";
-    config.edgeNodes   = @[ @"Edge 节点 IP 或域名" ];
+    config.edgeNodes       = @[ @"Edge 节点 IP 或域名" ];
+
+    AXProxyConfig *proxy = [[AXProxyConfig alloc] init];
+    proxy.secureProxyEnabled = YES;
+    config.proxy = proxy;
 
     int r = [AXService initialize:config];
     if (r != 0) {
@@ -67,58 +71,53 @@ YourApp/
 | `AXConfig.accessKeyID` | AccessKey ID（必填），从控制台获取 |
 | `AXConfig.accessKeySecret` | AccessKey Secret（必填），从控制台获取 |
 | `AXConfig.edgeNodes` | Edge 节点地址数组（必填），`NSArray<NSString *>`，至少 1 个，推荐 2+ |
-| `AXConfig.dns` | DNS 配置（可选），通过 `AXDNSConfig` 构造。通过 `-addEdgeDohResolveDomain:`（或直接给 `edgeDohResolveDomains` 赋值）加入 EdgeDoH 白名单；通过 `-addEdgeDohBypassDomain:` 为白名单中的主机豁免（bypass 优先于 resolve）。匹配规则为精确域名或 `*.suffix` 通配。**未配置白名单时所有主机走系统 DNS**，需要 EdgeDoH 防护的主机请显式加入。 |
-| `AXConfig.secureProxyEnabled` | 加密隧道开关（可选），默认启用；显式设 `NO` 关闭 |
+| `AXConfig.proxy` | 代理配置（可选），通过 `AXProxyConfig` 构造。`AXProxyConfig.secureProxyEnabled` 控制加密隧道开关，显式设 `NO` 关闭。 |
+| `AXConfig.dns` | DNS 配置（可选），通过 `AXDNSConfig` 构造。给 `edgeDohResolveDomains` 赋数组加入 EdgeDoH 白名单；给 `edgeDohBypassDomains` 赋数组为白名单中的主机豁免（bypass 优先于 resolve）。匹配规则为精确域名或 `*.suffix` 通配。**未配置白名单时所有主机走系统 DNS**，需要 EdgeDoH 防护的主机请显式加入。 |
 
 完整参数语义、约束与默认行为见接入指南附录 A。
 
 ## 使用 AXService
 
-`AXService` 提供 `getLocalTCPProxy:host:port:` 接口，可针对指定的目标 host 和 port 获取本地代理端点。使用返回的 IP/端口通过标准 POSIX socket（或 `NSStream`、`CFSocket` 等）建立连接后，SDK 会将流量透明地经由受保护通道转发。
+`AXService` 提供 `getLocalHTTPProxy` 接口，返回 SDK 在本地启动的 HTTP 代理端点。将该端点写入 `NSURLSessionConfiguration.connectionProxyDictionary` 后，`NSURLSession` 发出的 HTTP/HTTPS 请求会经过 SDK 受保护通道转发，对业务代码透明。
 
 ```objc
-NSString *requestHost = @"your.server.domain";
-int       requestPort = 7000;
-
-AXLocalProxy proxy;
-int res = [AXService getLocalTCPProxy:&proxy host:requestHost port:requestPort];
-if (res < 0) {
+AXLocalProxy *httpProxy = [AXService getLocalHTTPProxy];
+if (httpProxy == nil) {
     // SDK 未就绪，检查初始化结果或稍后重试
     return;
 }
 
-int sockFD = socket(AF_INET, SOCK_STREAM, 0);
-if (sockFD < 0) {
-    return;
-}
+NSURLSessionConfiguration *cfg = [NSURLSessionConfiguration defaultSessionConfiguration];
+cfg.connectionProxyDictionary = @{
+    @"HTTPEnable"  : @YES,
+    @"HTTPProxy"   : httpProxy.ip,
+    @"HTTPPort"    : @(httpProxy.port),
+    @"HTTPSEnable" : @YES,
+    @"HTTPSProxy"  : httpProxy.ip,
+    @"HTTPSPort"   : @(httpProxy.port),
+};
 
-struct sockaddr_in addr;
-memset(&addr, 0, sizeof(addr));
-addr.sin_family = AF_INET;
-addr.sin_port   = htons(proxy.port);
-inet_pton(AF_INET, proxy.ip, &addr.sin_addr);
+NSURLSession *session = [NSURLSession sessionWithConfiguration:cfg];
 
-if (connect(sockFD, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-    close(sockFD);
-    return;
-}
-
-// 通过 sockFD 读写数据 ...
+NSURL *url = [NSURL URLWithString:@"https://your.server.domain/your/path"];
+NSURLSessionDataTask *task =
+    [session dataTaskWithRequest:[NSURLRequest requestWithURL:url]
+               completionHandler:^(NSData *data, NSURLResponse *resp, NSError *error) {
+                 // 处理响应 ...
+               }];
+[task resume];
 ```
+
+> **提示：** `connectionProxyDictionary` 仅对该 `NSURLSession` 生效，不会污染共享的 `NSURLSessionConfiguration` 或全局代理设置。需要的话可以为不同业务创建多个 session。
 
 ### 其他代理端点
 
-除按 host 粒度的 TCP 代理外，`AXService` 还提供：
+除 HTTP 代理外，`AXService` 还提供：
 
 ```objc
-AXLocalProxy http;
-[AXService getLocalHTTPProxy:&http];    // 本地 HTTP 代理端点
-
-AXLocalProxy socks5;
-[AXService getLocalSocks5Proxy:&socks5]; // 本地 SOCKS5 代理端点
+AXLocalProxy *socks5 = [AXService getLocalSocks5Proxy];
+// 本地 SOCKS5 代理端点，可用于支持 SOCKS5 的客户端
 ```
-
-如果需要将自定义 HTTP 客户端或任意 TCP 客户端以系统代理方式接入 SDK，可使用这两个端点。
 
 ### DNS 辅助方法
 
@@ -133,23 +132,21 @@ NSArray<NSString *> *v6 = [AXService getIPv6sForHost:@"your.server.domain"];
 
 ## 错误处理
 
-当 SDK 未初始化或本地代理不可用时，`[AXService getLocalTCPProxy:host:port:]`（以及其他 `getLocal...Proxy:` 方法）会返回负数状态码。开启 socket 前务必检查返回值：
+`[AXService getLocalHTTPProxy]`（以及其他 `getLocal...Proxy` 变体）在 SDK 未初始化或本地代理不可用时返回 `nil`。配置 `NSURLSession` 前务必判空：
 
 ```objc
-AXLocalProxy proxy;
-int res = [AXService getLocalTCPProxy:&proxy host:requestHost port:requestPort];
-if (res < 0) {
+AXLocalProxy *httpProxy = [AXService getLocalHTTPProxy];
+if (httpProxy == nil) {
     // SDK 未就绪，检查初始化结果或稍后重试
     return;
 }
 ```
 
-socket 上的网络错误会通过标准 POSIX 的 `errno` / `strerror(errno)` 反馈，按常规方式处理即可：
+请求层面的网络错误通过 `NSURLSession` completion handler 的 `NSError *error` 返回，按常规方式处理即可：
 
 ```objc
-if (connect(sockFD, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-    NSLog(@"connect error: %s", strerror(errno));
-    close(sockFD);
+if (error != nil) {
+    NSLog(@"http request error: %@", error.localizedDescription);
     return;
 }
 ```
@@ -159,13 +156,13 @@ if (connect(sockFD, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
 集成 SDK 后，运行 App 并在 Xcode 控制台中关注带 `[AXService]` 标签的日志。接入成功时你应该看到：
 
 1. App 启动过程中 `[AXService initialize:]` 无错误日志。
-2. `getLocalTCPProxy:host:port:` 返回 `0`，并在 `AXLocalProxy` 中得到回环 IP 和非零端口。
-3. 与该代理端点建立 socket 连接成功，并从业务服务端收到预期响应。
+2. `getLocalHTTPProxy` 返回非空对象，其中包含回环 IP 和非零端口。
+3. 通过该端点配置的 `NSURLSession` 请求返回业务服务端的预期响应（如 `200 OK`）。
 
 如有异常，参考下表排查常见问题：
 
 | 现象 | 原因 | 处理方式 |
 |------|------|---------|
 | `initialize:` 返回负数 | 凭证无效或 Edge 不可达 | 核对 `accessKeyID`、`accessKeySecret`、`edgeNodes` |
-| `getLocalTCPProxy:host:port:` 返回负数 | SDK 未初始化或代理未就绪 | 确认 `initialize:` 返回 `0` 后再调用代理相关 API |
-| 连接超时或报错 `ECONNREFUSED` | 内部代理启动失败 | 检查 `initialize:` 返回码及 Edge 连通性 |
+| `getLocalHTTPProxy` 返回 `nil` | SDK 未初始化或代理未就绪 | 确认 `initialize:` 返回 `0` 后再调用代理相关 API |
+| 请求超时或报错 `Could not connect to the server` | 内部代理启动失败 | 检查 `initialize:` 返回码及 Edge 连通性 |

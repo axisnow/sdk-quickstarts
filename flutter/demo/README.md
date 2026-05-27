@@ -85,8 +85,7 @@ if (result == 0) {
 | `AxConfig(accessKeyId: ...)` | AccessKey ID（必填），从控制台获取 |
 | `AxConfig(accessKeySecret: ...)` | AccessKey Secret（必填），从控制台获取 |
 | `AxConfig(edgeNodes: ...)` | Edge 节点地址列表（必填），`List<String>`，至少 1 个，推荐 2+ |
-| `AxConfig(dns: ...)` | DNS 配置（可选），通过 `AxDnsConfig` 构造。使用 `addEdgeDohResolveDomain(...)`（或直接传入 `edgeDohResolveDomains: [...]`）将主机加入 EdgeDoH 白名单；使用 `addEdgeDohBypassDomain(...)` 为白名单中的特定主机豁免（bypass 优先于 resolve）。匹配规则为精确域名或 `*.suffix` 通配。**未配置白名单时所有主机走系统 DNS**，需要 EdgeDoH 防护的主机请显式加入。 |
-| `AxConfig(secureProxyEnabled: ...)` | 加密隧道开关（可选），默认启用；显式传 `false` 关闭 |
+| `AxConfig(dns: ...)` | DNS 配置（可选），通过 `AxDnsConfig` 构造。传入 `edgeDohResolveDomains: [...]` 将主机加入 EdgeDoH 白名单；传入 `edgeDohBypassDomains: [...]` 为白名单中的特定主机豁免（bypass 优先于 resolve）。匹配规则为精确域名或 `*.suffix` 通配。**未配置白名单时所有主机走系统 DNS**，需要 EdgeDoH 防护的主机请显式加入。 |
 
 完整参数语义、约束与默认行为见接入指南附录 A。
 

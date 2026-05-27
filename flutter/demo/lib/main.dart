@@ -89,8 +89,7 @@ class _MyAppState extends State<MyApp> {
         accessKeyId: accessKeyId,
         accessKeySecret: accessKeySecret,
         edgeNodes: edgeNodes,
-        dns: AxDnsConfig(edgeDohResolveDomains: ["*.example.com"]),
-        secureProxyEnabled: true);
+        dns: AxDnsConfig(edgeDohResolveDomains: ["*.example.com"]));
 
     var result = await AxService.initialize(config: cfg);
     _log(result == 0 ? "axis init success" : "axis init failure!");

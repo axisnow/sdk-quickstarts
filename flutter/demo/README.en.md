@@ -85,8 +85,7 @@ if (result == 0) {
 | `AxConfig(accessKeyId: ...)` | AccessKey ID (required), obtained from the console |
 | `AxConfig(accessKeySecret: ...)` | AccessKey Secret (required), obtained from the console |
 | `AxConfig(edgeNodes: ...)` | List of Edge node addresses (required); `List<String>`; at least 1, 2+ recommended |
-| `AxConfig(dns: ...)` | DNS configuration (optional); construct an `AxDnsConfig`. Whitelist hosts for EdgeDoH via `addEdgeDohResolveDomain(...)` (or pass `edgeDohResolveDomains: [...]`); exempt specific hosts via `addEdgeDohBypassDomain(...)` (bypass takes priority over the whitelist). Patterns are exact or `*.suffix` wildcards. **Without a whitelist, all hosts resolve via the OS DNS resolver** — explicitly add hosts you want to protect via EdgeDoH. |
-| `AxConfig(secureProxyEnabled: ...)` | Encrypted tunnel toggle (optional); enabled by default; pass `false` to disable |
+| `AxConfig(dns: ...)` | DNS configuration (optional); construct an `AxDnsConfig`. Pass `edgeDohResolveDomains: [...]` to whitelist hosts for EdgeDoH; pass `edgeDohBypassDomains: [...]` to exempt specific hosts (bypass takes priority over the whitelist). Patterns are exact or `*.suffix` wildcards. **Without a whitelist, all hosts resolve via the OS DNS resolver** — explicitly add hosts you want to protect via EdgeDoH. |
 
 For full parameter semantics, constraints, and default behavior, see Appendix A of the integration guide.
 
