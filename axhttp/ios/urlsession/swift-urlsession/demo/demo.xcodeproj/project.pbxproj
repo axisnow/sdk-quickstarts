@@ -15,22 +15,9 @@
 		3C72DD872E648A71007525B3 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C72DD862E648A71007525B3 /* libc++.tbd */; };
 		3C72DD892E648A7A007525B3 /* DeviceCheck.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C72DD882E648A7A007525B3 /* DeviceCheck.framework */; };
 		3C72DD8B2E648A87007525B3 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C72DD8A2E648A87007525B3 /* CoreTelephony.framework */; };
-		3C72DD982E648DB8007525B3 /* AXSecurity.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3C72DD962E648DAB007525B3 /* AXSecurity.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3C72DD8D2E648A91007525B3 /* AXSecurityURLSession.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C72DD8C2E648A91007525B3 /* AXSecurityURLSession.xcframework */; };
+		3C72DD8F2E648B83007525B3 /* AXSecurity.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C72DD8E2E648B83007525B3 /* AXSecurity.xcframework */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		3C72DD992E648DB8007525B3 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				3C72DD982E648DB8007525B3 /* AXSecurity.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1D1A1F5B2ABCD12300E456789 /* demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -43,9 +30,8 @@
 		3C72DD862E648A71007525B3 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		3C72DD882E648A7A007525B3 /* DeviceCheck.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DeviceCheck.framework; path = System/Library/Frameworks/DeviceCheck.framework; sourceTree = SDKROOT; };
 		3C72DD8A2E648A87007525B3 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
-		3C72DD8C2E648A91007525B3 /* AXSecurityURLSession.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AXSecurityURLSession.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		3C72DD8E2E648B83007525B3 /* AXSecurity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AXSecurity.framework; path = ../lib/Frameworks/AXSecurity.framework; sourceTree = "<group>"; };
-		3C72DD962E648DAB007525B3 /* AXSecurity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AXSecurity.framework; sourceTree = "<group>"; };
+		3C72DD8C2E648A91007525B3 /* AXSecurityURLSession.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = AXSecurityURLSession.xcframework; path = Frameworks/AXSecurityURLSession.xcframework; sourceTree = "<group>"; };
+		3C72DD8E2E648B83007525B3 /* AXSecurity.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = AXSecurity.xcframework; path = Frameworks/AXSecurity.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +39,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3C72DD8F2E648B83007525B3 /* AXSecurity.xcframework in Frameworks */,
+				3C72DD8D2E648A91007525B3 /* AXSecurityURLSession.xcframework in Frameworks */,
 				3C72DD8B2E648A87007525B3 /* CoreTelephony.framework in Frameworks */,
 				3C72DD892E648A7A007525B3 /* DeviceCheck.framework in Frameworks */,
 				3C72DD872E648A71007525B3 /* libc++.tbd in Frameworks */,
@@ -95,23 +83,14 @@
 		3C72DD832E648A60007525B3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				3C72DD952E648DAB007525B3 /* Frameworks */,
-				3C72DD8E2E648B83007525B3 /* AXSecurity.framework */,
-				3C72DD8C2E648A91007525B3 /* AXSecurityURLSession.framework */,
+				3C72DD8E2E648B83007525B3 /* AXSecurity.xcframework */,
+				3C72DD8C2E648A91007525B3 /* AXSecurityURLSession.xcframework */,
 				3C72DD8A2E648A87007525B3 /* CoreTelephony.framework */,
 				3C72DD882E648A7A007525B3 /* DeviceCheck.framework */,
 				3C72DD862E648A71007525B3 /* libc++.tbd */,
 				3C72DD842E648A60007525B3 /* libz.tbd */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		3C72DD952E648DAB007525B3 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				3C72DD962E648DAB007525B3 /* AXSecurity.framework */,
-			);
-			path = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -124,7 +103,6 @@
 				1D1A1F572ABCD12300E456789 /* Sources */,
 				1D1A1F582ABCD12300E456789 /* Frameworks */,
 				1D1A1F592ABCD12300E456789 /* Resources */,
-				3C72DD992E648DB8007525B3 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

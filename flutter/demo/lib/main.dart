@@ -1,11 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:axsecurity_flutter_plugin/axsecurity_flutter_plugin.dart';
-import 'package:dio/dio.dart';
-import 'package:axsecurity_flutter_plugin/config.dart';
+// *** UNCOMMENT THE LINES BELOW FOR SDK ***
+// import 'package:flutter/services.dart';
+// import 'package:axsecurity_flutter_plugin/axsecurity_flutter_plugin.dart';
+// import 'package:axsecurity_flutter_plugin/config.dart';
 import 'package:http/http.dart' as http;
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/status.dart' as ws_status;
+import 'dart:async';
 import 'dart:convert';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // *** UNCOMMENT THE LINES BELOW FOR SDK ***
+  // int? result;
+  // try {
+  //   AxConfig cfg = AxConfig(
+  //       accessKeyId: 'your accessKeyId from SDK Deployment',
+  //       accessKeySecret: 'your accessKeySecret from SDK Deployment',
+  //       edgeNodes: ['edge IP'],
+  //       dns: AxDnsConfig(edgeDohResolveDomains: ["*.example.com"]));
+  //   result = await AxService.initialize(config: cfg);
+  // } on PlatformException {
+  //   result = -1;
+  // }
+  // if (result != 0) {
+  //   debugPrint('SDK initialization failed: $result');
+  // }
+
   runApp(const MyApp());
 }
 
@@ -20,7 +42,9 @@ class _MyAppState extends State<MyApp> {
 // logging tag
   static const String tag = "HTTPClIENT FLUTTER";
   static const String demoURL = "https://example.com";
+  static const String wsURL = "wss://echo.websocket.org";
   final StringBuffer _sb = StringBuffer();
+  bool _wsBusy = false;
   @override
   void initState() {
     super.initState();
@@ -39,9 +63,8 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _buildButton(title: '初始化', onTap: _init),
-              _buildButton(title: '请求', onTap: _request),
-              _buildButton(title: 'HttpClient', onTap: _onUsedHttpClient),
+              _buildButton(title: 'HTTP Request', onTap: _onUsedHttpClient),
+              _buildButton(title: 'WebSocket', onTap: _onUsedWebSocket),
               const SizedBox(height: 20),
               Expanded(
                 child: SingleChildScrollView(
@@ -78,48 +101,15 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  ///初始化
-  _init() async {
-    // *** COMMENT THE LINE BELOW FOR SDK***//
-    var accessKeyId = 'your accessKeyId from SDK Deployment';
-    var accessKeySecret = 'your accessKeySecret from SDK Deployment';
-    var edgeNodes = ['edge IP'];
-
-    AxConfig cfg = AxConfig(
-        accessKeyId: accessKeyId,
-        accessKeySecret: accessKeySecret,
-        edgeNodes: edgeNodes,
-        dns: AxDnsConfig(edgeDohResolveDomains: ["*.example.com"]));
-
-    var result = await AxService.initialize(config: cfg);
-    _log(result == 0 ? "axis init success" : "axis init failure!");
-  }
-
-  ///请求
-  _request() async {
-    ///获取本地代理IP
-    var config =
-        await AxService.getLocalTCPProxy(host: "example.com", port: 80);
-    if (config == null) {
-      _log("getLocalTCPProxy failure!");
-      return;
-    }
-
-    _log("getLocalTCPProxy1");
-
-    var dio = Dio();
-    var response = await dio.get("http://${config.ip}:${config.port}",
-        options: Options(headers: {
-          //set sni
-          'Host': 'example.com'
-        }));
-    _log("http response through axis proxy:${response.data}");
-  }
-
   _onUsedHttpClient() async {
     _log("$tag: Checking connectivity...");
     try {
-      http.Client client = AxClient();
+      // *** COMMENT THE LINE BELOW FOR SDK ***
+      http.Client client = http.Client();
+
+      // *** UNCOMMENT THE LINE BELOW FOR SDK ***
+      // http.Client client = AxClient();
+
       http.Response response = await client.get(Uri.parse(demoURL));
       if (response.statusCode == 200) {
         _log(
@@ -133,48 +123,69 @@ class _MyAppState extends State<MyApp> {
     setState(() {});
   }
 
+  _onUsedWebSocket() async {
+    if (_wsBusy) return;
+    _wsBusy = true;
+    _sb.clear();
+    _append("$tag: Connecting to $wsURL ...");
+    IOWebSocketChannel? channel;
+    StreamSubscription<dynamic>? sub;
+    var aborted = false;
+    try {
+      // *** COMMENT THE LINE BELOW FOR SDK ***
+      channel = IOWebSocketChannel.connect(Uri.parse(wsURL));
+
+      // *** UNCOMMENT THE LINES BELOW FOR SDK ***
+      // AxHttpClient exposes the SDK local proxy via findProxy, so the WebSocket
+      // upgrade request is routed through the Axis proxy transparently.
+      // channel = IOWebSocketChannel.connect(
+      //   Uri.parse(wsURL),
+      //   customClient: AxHttpClient(),
+      // );
+
+      await channel.ready;
+      _append("$tag: WebSocket connected");
+
+      sub = channel.stream.listen(
+        (data) => _append("$tag: echo <- $data"),
+        onDone: () {
+          _append("$tag: WebSocket closed");
+          aborted = true;
+        },
+        onError: (Object e) {
+          _append("$tag: WebSocket error: $e");
+          aborted = true;
+        },
+        cancelOnError: true,
+      );
+
+      const totalRounds = 5;
+      const interval = Duration(seconds: 2);
+      for (var i = 1; i <= totalRounds; i++) {
+        if (aborted) break;
+        final payload = "hello $i from axsecurity flutter demo";
+        channel.sink.add(payload);
+        _append("$tag: sent ($i/$totalRounds) -> $payload");
+        if (i < totalRounds) await Future.delayed(interval);
+      }
+    } catch (e) {
+      _append("$tag: ${e.toString()}");
+    } finally {
+      await sub?.cancel();
+      await channel?.sink.close(ws_status.normalClosure);
+      _wsBusy = false;
+    }
+  }
+
   void _log(String text) {
     _sb
       ..clear()
       ..writeln(text);
     setState(() {});
   }
-}
 
-class AxisDioInterceptor extends Interceptor {
-  // Using dynamic to avoid the private type warning while still accessing the methods
-  late dynamic _state;
-  AxisDioInterceptor(dynamic state) {
-    _state = state;
-  }
-
-  @override
-  void onRequest(
-      RequestOptions options, RequestInterceptorHandler handler) async {
-    var uri = options.uri;
-
-    ///获取本地代理IP
-    ///
-
-    _state._log("uri =$uri");
-
-    var config =
-        await AxService.getLocalTCPProxy(host: uri.host, port: uri.port);
-    if (config == null) {
-      _state._log("config null");
-
-      handler.reject(DioError(
-          requestOptions: options, error: "getLocalTCPProxy failure!"));
-      return;
-    }
-    _state._log("config.ip =${config.ip}");
-
-    var path = uri.replace(host: config.ip, port: config.port).toString();
-    var headers = options.headers;
-    headers["Host"] = uri.host;
-
-    _state._log("path =$path");
-
-    handler.next(options.copyWith(path: path, headers: headers));
+  void _append(String text) {
+    _sb.writeln(text);
+    setState(() {});
   }
 }

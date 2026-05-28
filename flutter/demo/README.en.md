@@ -55,14 +55,10 @@ int? result;
 // Platform messages may fail, so we use a try/catch PlatformException.
 // We also handle the message potentially returning null.
 try {
-    var accessKeyId = 'your accessKeyId from SDK Deployment';
-    var accessKeySecret = 'your accessKeySecret from SDK Deployment';
-    var edgeNodes = ['edge IP'];
-
     AxConfig cfg = AxConfig(
-        accessKeyId: accessKeyId,
-        accessKeySecret: accessKeySecret,
-        edgeNodes: edgeNodes,
+        accessKeyId: 'your accessKeyId from SDK Deployment',
+        accessKeySecret: 'your accessKeySecret from SDK Deployment',
+        edgeNodes: ['edge IP'],
     );
 
     result = await AxService.initialize(config: cfg);
@@ -77,6 +73,16 @@ if (result == 0) {
 `initialize` returns `0` on success or a negative error code on failure.
 
 > **Important:** `initialize` must be called exactly once before any other `AxService` or `AxClient` operation. Calling it more than once is not supported.
+
+> **Tip:** If you call `AxService.initialize` inside `main()` before `runApp()`, you must call `WidgetsFlutterBinding.ensureInitialized()` first. `AxService` talks to the native layer over a platform channel, which is unavailable until the binding is ready; otherwise it throws `Null check operator used on a null value` and the app launches to a blank screen:
+>
+> ```Dart
+> void main() async {
+>   WidgetsFlutterBinding.ensureInitialized();
+>   // ... AxService.initialize(config: cfg) ...
+>   runApp(const MyApp());
+> }
+> ```
 
 ## Parameter Reference
 
@@ -117,6 +123,33 @@ After creating the `Dio` you can perform requests and await responses as normal,
 
 ```Dart
 var response = await dio.get('https://your.domain/api');
+```
+
+## Using SDK With WebSocket
+
+A WebSocket connection is established over an HTTP upgrade handshake, so routing it through the SDK only requires [`web_socket_channel`](https://pub.dev/packages/web_socket_channel) to use `AxHttpClient` as its underlying client — the handshake request then transparently goes through the SDK local proxy channel. Pass it via the `customClient` parameter of `IOWebSocketChannel.connect`:
+
+```Dart
+import 'package:web_socket_channel/io.dart';
+
+final channel = IOWebSocketChannel.connect(
+  Uri.parse('wss://your.domain/ws'),
+  customClient: AxHttpClient(),
+);
+await channel.ready;
+
+channel.sink.add('hello');
+channel.stream.listen((data) {
+  // handle server messages
+});
+```
+
+Remember to close the connection when done:
+
+```Dart
+import 'package:web_socket_channel/status.dart' as ws_status;
+
+await channel.sink.close(ws_status.normalClosure);
 ```
 
 ## Error Handling

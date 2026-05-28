@@ -23,12 +23,12 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../plugin
-  dio: ^4.0.6
   logger: ^2.0.2
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   http: ^1.1.0  # 使用与plugin中相同的版本
+  web_socket_channel: ^2.4.0
 
 dev_dependencies:
   integration_test:

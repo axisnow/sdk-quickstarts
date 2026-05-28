@@ -10,8 +10,8 @@ Note that the minimum requirement is iOS 12. You cannot use SDK in apps that sup
 ## ADDING SDK DEPENDENCY
 
 Add the following frameworks/libraries to the ”Link Binary with Libraries" section of your project's “Build Phases”.
-1.  `AXSecurityURLSession.framework` SDK URLSession Framework
-2.  `AXSecurity.framework` SDK Core SDK
+1.  `AXSecurityURLSession.xcframework` SDK URLSession Framework
+2.  `AXSecurity.xcframework` SDK Core SDK
 3.  `libz.tbd` compression library
 4.  `libc++.tbd` C++ standard library
 5.  `DeviceCheck.framework` Apple's DeviceCheck framework

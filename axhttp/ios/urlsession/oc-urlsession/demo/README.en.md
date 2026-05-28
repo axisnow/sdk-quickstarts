@@ -12,8 +12,8 @@ Note that the minimum supported iOS version is 12.0. You cannot use SDK in apps 
 
 Copy the following frameworks into your app's project directory (e.g. `YourApp/Frameworks/`) and add them to the **Link Binary with Libraries** section of your target's **Build Phases**:
 
-1. `AXSecurityNSURLSession.framework` — SDK NSURLSession wrapper
-2. `AXSecurity.framework` — SDK core SDK
+1. `AXSecurityNSURLSession.xcframework` — SDK NSURLSession wrapper
+2. `AXSecurity.xcframework` — SDK core SDK
 
 Then add the following system dependencies to the same **Link Binary with Libraries** section:
 
@@ -28,8 +28,8 @@ Reference layout:
 ```
 YourApp/
 └── Frameworks/
-    ├── AXSecurityNSURLSession.framework
-    └── AXSecurity.framework
+    ├── AXSecurityNSURLSession.xcframework
+    └── AXSecurity.xcframework
 ```
 
 ## Initializing SDK

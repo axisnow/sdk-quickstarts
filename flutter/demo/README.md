@@ -55,14 +55,10 @@ int? result;
 // Platform messages 可能失败，使用 try/catch 捕获 PlatformException，
 // 并处理可能为 null 的返回值。
 try {
-    var accessKeyId = 'SDK 部署时获得的 accessKeyId';
-    var accessKeySecret = 'SDK 部署时获得的 accessKeySecret';
-    var edgeNodes = ['Edge 节点 IP'];
-
     AxConfig cfg = AxConfig(
-        accessKeyId: accessKeyId,
-        accessKeySecret: accessKeySecret,
-        edgeNodes: edgeNodes,
+        accessKeyId: 'SDK 部署时获得的 accessKeyId',
+        accessKeySecret: 'SDK 部署时获得的 accessKeySecret',
+        edgeNodes: ['Edge 节点 IP'],
     );
 
     result = await AxService.initialize(config: cfg);
@@ -77,6 +73,16 @@ if (result == 0) {
 `initialize` 成功时返回 `0`，失败时返回负数错误码。
 
 > **重要：** `initialize` 必须在调用任何其他 `AxService` / `AxClient` 方法之前**仅调用一次**，不支持多次调用。
+
+> **提示：** 若在 `runApp()` 之前的 `main()` 中调用 `AxService.initialize`，必须先调用 `WidgetsFlutterBinding.ensureInitialized()`。`AxService` 通过 platform channel 与原生层通信，而 platform channel 需要绑定就绪后才可用；否则会抛出 `Null check operator used on a null value`，导致启动白屏：
+>
+> ```Dart
+> void main() async {
+>   WidgetsFlutterBinding.ensureInitialized();
+>   // ... AxService.initialize(config: cfg) ...
+>   runApp(const MyApp());
+> }
+> ```
 
 ## 参数说明
 
@@ -117,6 +123,33 @@ var dio = Dio();
 
 ```Dart
 var response = await dio.get('https://your.domain/api');
+```
+
+## 配合 WebSocket 使用
+
+WebSocket 连接建立在一次 HTTP 升级握手之上，因此只要让 [`web_socket_channel`](https://pub.dev/packages/web_socket_channel) 使用 `AxHttpClient` 作为底层 client，握手请求即可透明地走 SDK 本地代理通道。通过 `IOWebSocketChannel.connect` 的 `customClient` 参数传入：
+
+```Dart
+import 'package:web_socket_channel/io.dart';
+
+final channel = IOWebSocketChannel.connect(
+  Uri.parse('wss://your.domain/ws'),
+  customClient: AxHttpClient(),
+);
+await channel.ready;
+
+channel.sink.add('hello');
+channel.stream.listen((data) {
+  // 处理服务端消息
+});
+```
+
+用完后记得关闭连接：
+
+```Dart
+import 'package:web_socket_channel/status.dart' as ws_status;
+
+await channel.sink.close(ws_status.normalClosure);
 ```
 
 ## 错误处理

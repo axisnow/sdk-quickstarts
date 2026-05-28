@@ -10,9 +10,9 @@
 
 ## 添加 SDK 服务依赖
 
-将 `AXSecurity.framework` 拷贝到你的工程目录（例如 `YourApp/Frameworks/`），并添加到目标 target 的 **Build Phases → Link Binary with Libraries** 中：
+将 `AXSecurity.xcframework` 拷贝到你的工程目录（例如 `YourApp/Frameworks/`），并添加到目标 target 的 **Build Phases → Link Binary with Libraries** 中：
 
-1. `AXSecurity.framework` — SDK 核心 SDK
+1. `AXSecurity.xcframework` — SDK 核心 SDK
 
 在同一个 **Link Binary with Libraries** 中继续添加以下系统依赖：
 
@@ -27,7 +27,7 @@
 ```
 YourApp/
 └── Frameworks/
-    └── AXSecurity.framework
+    └── AXSecurity.xcframework
 ```
 
 ## 初始化 AXService

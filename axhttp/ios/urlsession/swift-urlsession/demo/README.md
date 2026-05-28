@@ -12,8 +12,8 @@
 
 在目标 target 的 **Build Phases → Link Binary with Libraries** 中添加以下框架与库：
 
-1. `AXSecurityURLSession.framework` — SDK URLSession 包装框架
-2. `AXSecurity.framework` — SDK 核心 SDK
+1. `AXSecurityURLSession.xcframework` — SDK URLSession 包装框架
+2. `AXSecurity.xcframework` — SDK 核心 SDK
 3. `libz.tbd` — 压缩库
 4. `libc++.tbd` — C++ 标准库
 5. `DeviceCheck.framework` — Apple DeviceCheck 框架

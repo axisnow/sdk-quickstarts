@@ -10,9 +10,9 @@ Note that the minimum supported iOS version is 12.0. You cannot use SDK in apps 
 
 ## Adding SDK Service Dependency
 
-Copy `AXSecurity.framework` into your app's project directory (e.g. `YourApp/Frameworks/`) and add it to the **Link Binary with Libraries** section of your target's **Build Phases**:
+Copy `AXSecurity.xcframework` into your app's project directory (e.g. `YourApp/Frameworks/`) and add it to the **Link Binary with Libraries** section of your target's **Build Phases**:
 
-1. `AXSecurity.framework` — SDK core SDK
+1. `AXSecurity.xcframework` — SDK core SDK
 
 Then add the following system dependencies to the same **Link Binary with Libraries** section:
 
@@ -27,7 +27,7 @@ Reference layout:
 ```
 YourApp/
 └── Frameworks/
-    └── AXSecurity.framework
+    └── AXSecurity.xcframework
 ```
 
 ## Initializing AXService

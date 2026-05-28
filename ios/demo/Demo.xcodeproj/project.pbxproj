@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3C320A442E118251001AA8BB /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AD4581B2E1015AF001C0842 /* libresolv.tbd */; };
-		3C320A4C2E1206FB001AA8BB /* AXSecurity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C320A4B2E1206FB001AA8BB /* AXSecurity.framework */; };
+		3C320A4C2E1206FB001AA8BB /* AXSecurity.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C320A4B2E1206FB001AA8BB /* AXSecurity.xcframework */; };
 		3CD3CEC82B22CF0600A22FDC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3CD3CEC62B22CF0600A22FDC /* Main.storyboard */; };
 		3CD3CECA2B22CF0700A22FDC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3CD3CEC92B22CF0700A22FDC /* Assets.xcassets */; };
 		3CD3CECD2B22CF0700A22FDC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3CD3CECB2B22CF0700A22FDC /* LaunchScreen.storyboard */; };
@@ -22,7 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		3C320A4B2E1206FB001AA8BB /* AXSecurity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AXSecurity.framework; path = Frameworks/AXSecurity.framework; sourceTree = "<group>"; };
+		3C320A4B2E1206FB001AA8BB /* AXSecurity.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = AXSecurity.xcframework; path = Frameworks/AXSecurity.xcframework; sourceTree = "<group>"; };
 		3CD3CEBA2B22CF0600A22FDC /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3CD3CEBD2B22CF0600A22FDC /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		3CD3CEBE2B22CF0600A22FDC /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -45,7 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3C320A4C2E1206FB001AA8BB /* AXSecurity.framework in Frameworks */,
+				3C320A4C2E1206FB001AA8BB /* AXSecurity.xcframework in Frameworks */,
 				9A0E4ED42C4543460073E339 /* CoreTelephony.framework in Frameworks */,
 				3CD3CEDF2B232DE900A22FDC /* libc++.tbd in Frameworks */,
 				9A06BD5D2CA7009D00C1CA3E /* DeviceCheck.framework in Frameworks */,
@@ -93,7 +93,7 @@
 		3CD3CED82B22FD3200A22FDC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				3C320A4B2E1206FB001AA8BB /* AXSecurity.framework */,
+				3C320A4B2E1206FB001AA8BB /* AXSecurity.xcframework */,
 				9AD4581B2E1015AF001C0842 /* libresolv.tbd */,
 				9A06BD5C2CA7009D00C1CA3E /* DeviceCheck.framework */,
 				9A0E4ED32C4543460073E339 /* CoreTelephony.framework */,

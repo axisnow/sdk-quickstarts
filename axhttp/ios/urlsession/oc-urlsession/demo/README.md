@@ -12,8 +12,8 @@
 
 将以下 framework 拷贝到你的工程目录（例如 `YourApp/Frameworks/`），并添加到目标 target 的 **Build Phases → Link Binary with Libraries** 中：
 
-1. `AXSecurityNSURLSession.framework` — SDK NSURLSession 包装层
-2. `AXSecurity.framework` — SDK 核心 SDK
+1. `AXSecurityNSURLSession.xcframework` — SDK NSURLSession 包装层
+2. `AXSecurity.xcframework` — SDK 核心 SDK
 
 在同一个 **Link Binary with Libraries** 中继续添加以下系统依赖：
 
@@ -28,8 +28,8 @@
 ```
 YourApp/
 └── Frameworks/
-    ├── AXSecurityNSURLSession.framework
-    └── AXSecurity.framework
+    ├── AXSecurityNSURLSession.xcframework
+    └── AXSecurity.xcframework
 ```
 
 ## 初始化 SDK
