@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AX WebView Demo</string>
+    <string name="edit_URL_hint">https://example.com/</string>
+    <string name="load_button">Load</string>
+</resources>

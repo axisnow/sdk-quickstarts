@@ -1,0 +1,10 @@
+# Embedded frameworks (user-provided, see README)
+Frameworks
+
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+project.xcworkspace/xcuserdata/
+
+# macOS
+.DS_Store
