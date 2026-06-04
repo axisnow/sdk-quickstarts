@@ -44,9 +44,9 @@ Before installing the proxy on any web view, initialize the SDK once at app laun
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     AXConfig *config = [[AXConfig alloc] init];
-    config.accessKeyID     = @"accessKeyID from SDK deployment";
-    config.accessKeySecret = @"accessKeySecret from SDK deployment";
-    config.edgeNodes       = @[ @"edge node IP or domain" ];
+    config.accessKeyID     = @"<YOUR_ACCESS_KEY_ID>";
+    config.accessKeySecret = @"<YOUR_ACCESS_KEY_SECRET>";
+    config.edgeNodes       = @[ @"<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>" ];
 
     int r = [AXService initialize:config];
     if (r != 0) {
@@ -66,7 +66,7 @@ Before installing the proxy on any web view, initialize the SDK once at app laun
 |-----------|-------------|
 | `AXConfig.accessKeyID` | AccessKey ID (required), from the console |
 | `AXConfig.accessKeySecret` | AccessKey Secret (required), from the console |
-| `AXConfig.edgeNodes` | Edge node addresses (required), `NSArray<NSString *>`, at least 1, 2+ recommended |
+| `AXConfig.edgeNodes` | EIP(s) or domain(s) pointing to the AxisNow Edge DoH service (required), `NSArray<NSString *>`, at least 1, 2+ recommended |
 
 This demo uses only the minimal required fields. See the SDK integration guide for the full `AXConfig` options (DNS configuration, encrypted-tunnel toggle, etc.).
 

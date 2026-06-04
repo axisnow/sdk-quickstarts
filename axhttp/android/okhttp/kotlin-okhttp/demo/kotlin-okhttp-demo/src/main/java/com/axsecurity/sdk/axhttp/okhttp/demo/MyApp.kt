@@ -9,9 +9,9 @@ class MyApp : Application() {
         super.onCreate()
 
         // *** UNCOMMENT THE LINE BELOW FOR SDK ***
-        // val accessKeyId = "your accessKeyId from SDK Deployment"
-        // val accessKeySecret = "your accessKeySecret from SDK Deployment"
-        // val edgeNodes = arrayOf("edge IP")
+        // val accessKeyId = "<YOUR_ACCESS_KEY_ID>"
+        // val accessKeySecret = "<YOUR_ACCESS_KEY_SECRET>"
+        // val edgeNodes = arrayOf("<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>")
         // val routingDomain = "routing Domain"
         // val config = AXConfig.Builder()
         //     .accessKey(accessKeyId, accessKeySecret)

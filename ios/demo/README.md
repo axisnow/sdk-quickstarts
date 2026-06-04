@@ -42,9 +42,9 @@ YourApp/
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     AXConfig *config = [[AXConfig alloc] init];
-    config.accessKeyID     = @"SDK 部署时获得的 accessKeyID";
-    config.accessKeySecret = @"SDK 部署时获得的 accessKeySecret";
-    config.edgeNodes       = @[ @"Edge 节点 IP 或域名" ];
+    config.accessKeyID     = @"<YOUR_ACCESS_KEY_ID>";
+    config.accessKeySecret = @"<YOUR_ACCESS_KEY_SECRET>";
+    config.edgeNodes       = @[ @"<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>" ];
 
     AXProxyConfig *proxy = [[AXProxyConfig alloc] init];
     proxy.secureProxyEnabled = YES;
@@ -70,7 +70,7 @@ YourApp/
 |------|------|
 | `AXConfig.accessKeyID` | AccessKey ID（必填），从控制台获取 |
 | `AXConfig.accessKeySecret` | AccessKey Secret（必填），从控制台获取 |
-| `AXConfig.edgeNodes` | Edge 节点地址数组（必填），`NSArray<NSString *>`，至少 1 个，推荐 2+ |
+| `AXConfig.edgeNodes` | 指向 AxisNow Edge DoH 服务的 EIP 或域名（必填），`NSArray<NSString *>`，至少 1 个，推荐 2+ |
 | `AXConfig.proxy` | 代理配置（可选），通过 `AXProxyConfig` 构造。`AXProxyConfig.secureProxyEnabled` 控制加密隧道开关，显式设 `NO` 关闭。 |
 | `AXConfig.dns` | DNS 配置（可选），通过 `AXDNSConfig` 构造。给 `edgeDohResolveDomains` 赋数组加入 EdgeDoH 白名单；给 `edgeDohBypassDomains` 赋数组为白名单中的主机豁免（bypass 优先于 resolve）。匹配规则为精确域名或 `*.suffix` 通配。**未配置白名单时所有主机走系统 DNS**，需要 EdgeDoH 防护的主机请显式加入。 |
 

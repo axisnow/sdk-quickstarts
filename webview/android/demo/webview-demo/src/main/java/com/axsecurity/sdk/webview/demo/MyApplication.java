@@ -26,9 +26,9 @@ public class MyApplication extends Application {
         // Initialize the core SDK before any WebView is created. The AccessKey and
         // Edge nodes below come from your SDK Deployment (console).
         // *** UNCOMMENT THE LINES BELOW FOR SDK ***
-        // String accessKeyId = "your accessKeyId from SDK Deployment";
-        // String accessKeySecret = "your accessKeySecret from SDK Deployment";
-        // String[] edgeNodes = { "your edge IP or domain" };
+        // String accessKeyId = "<YOUR_ACCESS_KEY_ID>";
+        // String accessKeySecret = "<YOUR_ACCESS_KEY_SECRET>";
+        // String[] edgeNodes = { "<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>" };
         // AXConfig.DnsConfig dns = new AXConfig.DnsConfig.Builder()
         //         .edgeDohResolveDomains("*.example.com")
         //         .build();

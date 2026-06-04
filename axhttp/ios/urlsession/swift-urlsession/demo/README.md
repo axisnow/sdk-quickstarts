@@ -27,9 +27,9 @@
 ```swift
 init() {
     let config = AXConfig()
-    config.accessKeyID = "SDK 部署时获得的 accessKeyID"
-    config.accessKeySecret = "SDK 部署时获得的 accessKeySecret"
-    config.edgeNodes = ["1**.**.**.**"] // IPv4 edge 节点地址
+    config.accessKeyID = "<YOUR_ACCESS_KEY_ID>"
+    config.accessKeySecret = "<YOUR_ACCESS_KEY_SECRET>"
+    config.edgeNodes = ["<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>"]
     let result = AXService.initialize(config)
     if result == 0 {
         // TODO 初始化成功
@@ -47,7 +47,7 @@ init() {
 |------|------|
 | `AXConfig.accessKeyID` | AccessKey ID（必填），从控制台获取 |
 | `AXConfig.accessKeySecret` | AccessKey Secret（必填），从控制台获取 |
-| `AXConfig.edgeNodes` | Edge 节点地址列表（必填），`[String]`，至少 1 个，推荐 2+ |
+| `AXConfig.edgeNodes` | 指向 AxisNow Edge DoH 服务的 EIP 或域名（必填），`[String]`，至少 1 个，推荐 2+ |
 
 本 demo 仅使用上述最小必填字段。`AXConfig` 的完整选项（DNS 配置、加密隧道开关等）以及参数语义详见 SDK 接入指南。
 

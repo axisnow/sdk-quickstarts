@@ -56,9 +56,9 @@ int? result;
 // 并处理可能为 null 的返回值。
 try {
     AxConfig cfg = AxConfig(
-        accessKeyId: 'SDK 部署时获得的 accessKeyId',
-        accessKeySecret: 'SDK 部署时获得的 accessKeySecret',
-        edgeNodes: ['Edge 节点 IP'],
+        accessKeyId: '<YOUR_ACCESS_KEY_ID>',
+        accessKeySecret: '<YOUR_ACCESS_KEY_SECRET>',
+        edgeNodes: ['<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>'],
     );
 
     result = await AxService.initialize(config: cfg);
@@ -90,7 +90,7 @@ if (result == 0) {
 |------|------|
 | `AxConfig(accessKeyId: ...)` | AccessKey ID（必填），从控制台获取 |
 | `AxConfig(accessKeySecret: ...)` | AccessKey Secret（必填），从控制台获取 |
-| `AxConfig(edgeNodes: ...)` | Edge 节点地址列表（必填），`List<String>`，至少 1 个，推荐 2+ |
+| `AxConfig(edgeNodes: ...)` | 指向 AxisNow Edge DoH 服务的 EIP 或域名（必填），`List<String>`，至少 1 个，推荐 2+ |
 | `AxConfig(dns: ...)` | DNS 配置（可选），通过 `AxDnsConfig` 构造。传入 `edgeDohResolveDomains: [...]` 将主机加入 EdgeDoH 白名单；传入 `edgeDohBypassDomains: [...]` 为白名单中的特定主机豁免（bypass 优先于 resolve）。匹配规则为精确域名或 `*.suffix` 通配。**未配置白名单时所有主机走系统 DNS**，需要 EdgeDoH 防护的主机请显式加入。 |
 
 完整参数语义、约束与默认行为见接入指南附录 A。
@@ -194,3 +194,15 @@ try {
 | `initialize` 返回负数 | 凭证错误或 Edge 不可达 | 检查 `accessKeyId`、`accessKeySecret` 和 `edgeNodes` 是否正确 |
 | `initialize` 返回 `null`（`PlatformException`） | 原生插件未链接或构建配置不完整 | 重新执行 `flutter pub get`；iOS 端确认上述 framework 已链接；Android 端确认 AAR 已正确打包 |
 | 请求超时或报 `Connection refused` | 内部代理启动失败 | 检查网络权限与 Edge 连通性；确保 `initialize` 返回 `0` 后再发起请求 |
+
+## 在 Android 原生层使用封装（WebView / OkHttp / Retrofit）
+
+本指南覆盖的是 Flutter（Dart 层）的 HTTP 接入。如果你的 Android 工程在**原生层**还用到了 `WebView`、`OkHttp` 或 `Retrofit`，并希望这部分流量也走 SDK，插件已内置对应的原生封装，但**默认关闭**——需在应用的 `android/gradle.properties` 中显式开启对应开关（按需选择）：
+
+```properties
+axsecurity.webview=true     # 原生 WebView 封装
+axsecurity.okhttp=true      # 原生 OkHttp 封装
+axsecurity.retrofit=true    # 原生 Retrofit 封装
+```
+
+开启后构建会自动把对应封装类及其运行时依赖引入宿主工程。这些开关仅作用于 **Android 原生层**；上文的 Dart 网络（http / Dio / WebSocket）无需任何开关。详细说明见插件 README 的「Bundled native wrappers」一节。

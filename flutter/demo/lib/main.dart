@@ -16,9 +16,9 @@ void main() async {
   // int? result;
   // try {
   //   AxConfig cfg = AxConfig(
-  //       accessKeyId: 'your accessKeyId from SDK Deployment',
-  //       accessKeySecret: 'your accessKeySecret from SDK Deployment',
-  //       edgeNodes: ['edge IP'],
+  //       accessKeyId: '<YOUR_ACCESS_KEY_ID>',
+  //       accessKeySecret: '<YOUR_ACCESS_KEY_SECRET>',
+  //       edgeNodes: ['<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>'],
   //       dns: AxDnsConfig(edgeDohResolveDomains: ["*.example.com"]));
   //   result = await AxService.initialize(config: cfg);
   // } on PlatformException {

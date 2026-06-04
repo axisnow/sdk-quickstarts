@@ -42,9 +42,9 @@ In order to use `AXService` you must initialize it when your app is created, usu
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     AXConfig *config = [[AXConfig alloc] init];
-    config.accessKeyID     = @"your accessKeyID from SDK Deployment";
-    config.accessKeySecret = @"your accessKeySecret from SDK Deployment";
-    config.edgeNodes       = @[ @"edge IP or hostname" ];
+    config.accessKeyID     = @"<YOUR_ACCESS_KEY_ID>";
+    config.accessKeySecret = @"<YOUR_ACCESS_KEY_SECRET>";
+    config.edgeNodes       = @[ @"<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>" ];
 
     AXProxyConfig *proxy = [[AXProxyConfig alloc] init];
     proxy.secureProxyEnabled = YES;
@@ -70,7 +70,7 @@ In order to use `AXService` you must initialize it when your app is created, usu
 |-----------|-------------|
 | `AXConfig.accessKeyID` | AccessKey ID (required), obtained from the console |
 | `AXConfig.accessKeySecret` | AccessKey Secret (required), obtained from the console |
-| `AXConfig.edgeNodes` | List of Edge node addresses (required); `NSArray<NSString *>`; at least 1, 2+ recommended |
+| `AXConfig.edgeNodes` | EIP(s) or domain(s) pointing to the AxisNow Edge DoH service (required); `NSArray<NSString *>`; at least 1, 2+ recommended |
 | `AXConfig.proxy` | Proxy configuration (optional); construct via `AXProxyConfig`. `AXProxyConfig.secureProxyEnabled` toggles the encrypted tunnel — set `NO` to disable. |
 | `AXConfig.dns` | DNS configuration (optional); construct via `AXDNSConfig`. Assign `edgeDohResolveDomains` with an array to whitelist hosts for EdgeDoH; assign `edgeDohBypassDomains` to exempt specific hosts (bypass takes priority over the whitelist). Patterns are exact or `*.suffix` wildcards. **Without a whitelist, all hosts resolve via the OS DNS resolver** — explicitly add hosts you want to protect via EdgeDoH. |
 

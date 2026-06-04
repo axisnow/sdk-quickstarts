@@ -53,9 +53,9 @@ class MyApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        val accessKeyId = "your accessKeyId from SDK Deployment"
-        val accessKeySecret = "your accessKeySecret from SDK Deployment"
-        val edgeNodes = arrayOf("edge IP")
+        val accessKeyId = "<YOUR_ACCESS_KEY_ID>"
+        val accessKeySecret = "<YOUR_ACCESS_KEY_SECRET>"
+        val edgeNodes = arrayOf("<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>")
 
         val config = AXConfig.Builder()
             .accessKey(accessKeyId, accessKeySecret)
@@ -79,7 +79,7 @@ The `initialize` method returns `0` on success or a negative error code on failu
 | Parameter | Description |
 |-----------|-------------|
 | `AXConfig.Builder().accessKey(...)` | AccessKey ID and Secret (required), obtained from the console |
-| `AXConfig.Builder().edgeNodes(...)` | List of Edge node addresses (required); pass an `Array<String>`; at least 1, 2+ recommended |
+| `AXConfig.Builder().edgeNodes(...)` | EIP(s) or domain(s) pointing to the AxisNow Edge DoH service (required); pass an `Array<String>`; at least 1, 2+ recommended |
 
 This demo uses the minimum required fields. The full `AXConfig.Builder` option set (DNS configuration, encrypted tunnel toggle, etc.) and parameter semantics are documented in the SDK integration guide.
 

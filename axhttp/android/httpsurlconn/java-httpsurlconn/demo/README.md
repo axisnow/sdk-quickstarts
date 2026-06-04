@@ -54,9 +54,9 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        String accessKeyId = "your accessKeyId from SDK Deployment";
-        String accessKeySecret = "your accessKeySecret from SDK Deployment";
-        String[] edgeNodes = {"edge IP"};
+        String accessKeyId = "<YOUR_ACCESS_KEY_ID>";
+        String accessKeySecret = "<YOUR_ACCESS_KEY_SECRET>";
+        String[] edgeNodes = {"<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>"};
 
         AXConfig config = new AXConfig.Builder()
             .accessKey(accessKeyId, accessKeySecret)
@@ -80,7 +80,7 @@ public class MyApplication extends Application {
 | 参数 | 说明 |
 |------|------|
 | `AXConfig.Builder().accessKey(...)` | AccessKey ID 与 Secret（必填），从控制台获取 |
-| `AXConfig.Builder().edgeNodes(...)` | Edge 节点地址列表（必填），传入 `String[]`，至少 1 个，推荐 2+ |
+| `AXConfig.Builder().edgeNodes(...)` | 指向 AxisNow Edge DoH 服务的 EIP 或域名（必填），传入 `String[]`，至少 1 个，推荐 2+ |
 
 本 demo 仅使用上述最小必填字段。`AXConfig.Builder` 的完整选项（DNS 配置、加密隧道开关等）以及参数语义详见 SDK 接入指南。
 

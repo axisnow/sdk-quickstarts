@@ -12,17 +12,34 @@
 
 ## 添加 SDK 服务依赖
 
-将核心 SDK 包 `axsecurity-android-sdk.aar` 放入封装模块的 `webview/libs/`（构建期注入，不入库），并把本封装模块作为依赖引入你的工程（发布版可走 Maven 坐标）：
+发布包 `axsecurity-android-webview-<version>.zip` 内含两个 AAR：核心 SDK `axsecurity-android-sdk.aar` 与 WebView 封装 `axsecurity-android-webview.aar`（后者是不含 `.so` 的薄封装）。把这**两个** AAR 都放入你的 App 模块的 `libs/`：
 
 ```
-webview/
+app/
 └── libs/
-    └── axsecurity-android-sdk.aar
+    ├── axsecurity-android-sdk.aar       # 核心 SDK
+    └── axsecurity-android-webview.aar   # WebView 封装
 ```
 
-## 清单文件修改
+并在 App 模块的 `build.gradle` 中引用它们：
 
-本封装模块自带 `androidx.webkit:webkit:1.11.0` 与 `android.permission.INTERNET` 权限声明，会自动合并到宿主 App 清单，**宿主无需额外修改 `AndroidManifest.xml`**。
+```groovy
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.aar'])
+}
+```
+
+> 这两个 AAR 以本地文件引入，**不携带传递依赖**，因此 `androidx.webkit` 需在宿主工程显式添加，详见下一节。
+
+## 依赖与清单文件
+
+封装使用 `androidx.webkit` 为 WebView 做进程级代理覆写。由于上一节的 AAR 以本地文件引入、**不携带传递依赖**，需在 App 模块 `build.gradle` 中显式添加该依赖（最低 1.4.0，可使用更高的 1.x 版本），否则运行期会因缺少 `ProxyController` 抛 `NoClassDefFoundError`：
+
+```groovy
+implementation 'androidx.webkit:webkit:1.4.0'
+```
+
+`android.permission.INTERNET` 权限声明在封装 AAR 自带的清单中，会自动合并到宿主 App 清单，**宿主无需修改 `AndroidManifest.xml`**。
 
 注意：SDK 支持的最低 Android SDK 版本为 21（Android 5.0）。
 
@@ -43,9 +60,9 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        String accessKeyId = "your accessKeyId from SDK Deployment";
-        String accessKeySecret = "your accessKeySecret from SDK Deployment";
-        String[] edgeNodes = {"edge IP"};
+        String accessKeyId = "<YOUR_ACCESS_KEY_ID>";
+        String accessKeySecret = "<YOUR_ACCESS_KEY_SECRET>";
+        String[] edgeNodes = {"<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>"};
 
         AXConfig config = new AXConfig.Builder()
             .accessKey(accessKeyId, accessKeySecret)
@@ -72,7 +89,7 @@ public class MyApplication extends Application {
 | 参数 | 说明 |
 |------|------|
 | `AXConfig.Builder().accessKey(...)` | AccessKey ID 与 Secret（必填），从控制台获取 |
-| `AXConfig.Builder().edgeNodes(...)` | Edge 节点地址列表（必填），传入 `String[]`，至少 1 个，推荐 2+ |
+| `AXConfig.Builder().edgeNodes(...)` | 指向 AxisNow Edge DoH 服务的 EIP 或域名（必填），传入 `String[]`，至少 1 个，推荐 2+ |
 | `AXConfig.Builder().dns(...)` | DNS 配置（可选），通过 `AXConfig.DnsConfig.Builder` 构造。通过 `edgeDohResolveDomains(String...)` 加入 EdgeDoH 白名单；通过 `edgeDohBypassDomains(String...)` 为白名单中的域名豁免（bypass 优先于 resolve）。匹配规则为精确域名或 `*.suffix` 通配。**未配置白名单时所有域名走系统 DNS**，需要 EdgeDoH 防护的域名请显式加入。 |
 
 完整参数语义、约束与默认行为见接入指南附录 A。

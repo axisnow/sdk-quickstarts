@@ -27,12 +27,12 @@ NSString* helloEndpoint = @"https://example.com";
     NSString* hostWithPort = nil;
 
     // *** UNCOMMENT THE LINES BELOW FOR AXNSURLSession ***
-    // NSString* accessKeyID=@"your accessKeyID of SDK Deployment";
-    // NSString* accessKeySecret=@"your accessKeyID of SDK Deployment";
+    // NSString* accessKeyID=@"<YOUR_ACCESS_KEY_ID>";
+    // NSString* accessKeySecret=@"<YOUR_ACCESS_KEY_SECRET>";
     // AXConfig *config = [[AXConfig alloc] init];
     // config.accessKeyID = accessKeyID;
     // config.accessKeySecret = accessKeySecret;
-    // config.edgeNodes = @[@"your accessKeyID of SDK Deployment"];
+    // config.edgeNodes = @[@"<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>"];
     // int r = [AXService initialize:config];
     // if (r != 0) {
     //     NSLog(@"Initialize failed, code %d", r);

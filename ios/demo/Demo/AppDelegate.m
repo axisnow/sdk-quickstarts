@@ -8,9 +8,9 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // *** UNCOMMENT THE LINES BELOW FOR SDK ***
     // AXConfig *config = [[AXConfig alloc] init];
-    // config.accessKeyID     = @"your accessKeyID of SDK Deployment";
-    // config.accessKeySecret = @"your accessKeySecret of SDK Deployment";
-    // config.edgeNodes       = @[ @"your edge IP or domain" ];
+    // config.accessKeyID     = @"<YOUR_ACCESS_KEY_ID>";
+    // config.accessKeySecret = @"<YOUR_ACCESS_KEY_SECRET>";
+    // config.edgeNodes       = @[ @"<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>" ];
     //
     // AXProxyConfig *proxy = [[AXProxyConfig alloc] init];
     // proxy.secureProxyEnabled = YES;

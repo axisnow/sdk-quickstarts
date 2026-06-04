@@ -42,9 +42,9 @@ In order to use SDK you must initialize it when your app is created, usually in 
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     AXConfig *config = [[AXConfig alloc] init];
-    config.accessKeyID     = @"your accessKeyID from SDK Deployment";
-    config.accessKeySecret = @"your accessKeySecret from SDK Deployment";
-    config.edgeNodes   = @[ @"edge IP or hostname" ];
+    config.accessKeyID     = @"<YOUR_ACCESS_KEY_ID>";
+    config.accessKeySecret = @"<YOUR_ACCESS_KEY_SECRET>";
+    config.edgeNodes   = @[ @"<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>" ];
 
     int r = [AXService initialize:config];
     if (r != 0) {
@@ -64,7 +64,7 @@ In order to use SDK you must initialize it when your app is created, usually in 
 |-----------|-------------|
 | `AXConfig.accessKeyID` | AccessKey ID (required), obtained from the console |
 | `AXConfig.accessKeySecret` | AccessKey Secret (required), obtained from the console |
-| `AXConfig.edgeNodes` | List of Edge node addresses (required); `NSArray<NSString *>`; at least 1, 2+ recommended |
+| `AXConfig.edgeNodes` | EIP(s) or domain(s) pointing to the AxisNow Edge DoH service (required); `NSArray<NSString *>`; at least 1, 2+ recommended |
 
 This demo uses the minimum required fields. The full `AXConfig` option set (DNS configuration, encrypted tunnel toggle, etc.) and parameter semantics are documented in the SDK integration guide.
 

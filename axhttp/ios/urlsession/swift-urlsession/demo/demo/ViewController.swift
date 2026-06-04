@@ -48,9 +48,9 @@ class ViewController: UIViewController {
         // *** UNCOMMENT THE LINES BELOW FOR AXHTTP***
         /*
          let config = AXConfig()
-         config.accessKeyID = ""
-         config.accessKeySecret = ""
-         config.edgeNodes = [""]
+         config.accessKeyID = "<YOUR_ACCESS_KEY_ID>"
+         config.accessKeySecret = "<YOUR_ACCESS_KEY_SECRET>"
+         config.edgeNodes = ["<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>"]
          let result = AXService.initialize(config)
          if (result == 0) {
            outputText = "初始化成功"

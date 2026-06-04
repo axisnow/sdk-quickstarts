@@ -9,9 +9,9 @@ class MyApp : Application() {
         super.onCreate()
 
         // *** UNCOMMENT THE LINE BELOW FOR AXIS  STEP 1***
-        // val accessKeyId = "your accessKeyId for SDK Deployment"
-        // val accessKeySecret = "your accessKeySecret for SDK Deployment"
-        // val edgeNodes = arrayOf("edge IP")
+        // val accessKeyId = "<YOUR_ACCESS_KEY_ID>"
+        // val accessKeySecret = "<YOUR_ACCESS_KEY_SECRET>"
+        // val edgeNodes = arrayOf("<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>")
 
         // val config = AXConfig.Builder()
         //     .accessKey(accessKeyId, accessKeySecret)

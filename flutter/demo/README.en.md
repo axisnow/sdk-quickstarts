@@ -56,9 +56,9 @@ int? result;
 // We also handle the message potentially returning null.
 try {
     AxConfig cfg = AxConfig(
-        accessKeyId: 'your accessKeyId from SDK Deployment',
-        accessKeySecret: 'your accessKeySecret from SDK Deployment',
-        edgeNodes: ['edge IP'],
+        accessKeyId: '<YOUR_ACCESS_KEY_ID>',
+        accessKeySecret: '<YOUR_ACCESS_KEY_SECRET>',
+        edgeNodes: ['<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>'],
     );
 
     result = await AxService.initialize(config: cfg);
@@ -90,7 +90,7 @@ if (result == 0) {
 |-----------|-------------|
 | `AxConfig(accessKeyId: ...)` | AccessKey ID (required), obtained from the console |
 | `AxConfig(accessKeySecret: ...)` | AccessKey Secret (required), obtained from the console |
-| `AxConfig(edgeNodes: ...)` | List of Edge node addresses (required); `List<String>`; at least 1, 2+ recommended |
+| `AxConfig(edgeNodes: ...)` | EIP(s) or domain(s) pointing to the AxisNow Edge DoH service (required); `List<String>`; at least 1, 2+ recommended |
 | `AxConfig(dns: ...)` | DNS configuration (optional); construct an `AxDnsConfig`. Pass `edgeDohResolveDomains: [...]` to whitelist hosts for EdgeDoH; pass `edgeDohBypassDomains: [...]` to exempt specific hosts (bypass takes priority over the whitelist). Patterns are exact or `*.suffix` wildcards. **Without a whitelist, all hosts resolve via the OS DNS resolver** — explicitly add hosts you want to protect via EdgeDoH. |
 
 For full parameter semantics, constraints, and default behavior, see Appendix A of the integration guide.
@@ -194,3 +194,15 @@ If something is wrong, look for these common issues:
 | `initialize` returns a negative value | Invalid credentials or unreachable Edge | Verify `accessKeyId`, `accessKeySecret`, and `edgeNodes` |
 | `initialize` resolves to `null` (`PlatformException`) | Native plugin not linked or build setup incomplete | Re-run `flutter pub get`; on iOS confirm the frameworks listed above are linked; on Android confirm the AAR is bundled |
 | Requests time out or fail with `Connection refused` | Internal proxy failed to start | Check network permissions and Edge connectivity; ensure `initialize` returned `0` before issuing requests |
+
+## Using the wrappers on the Android native layer (WebView / OkHttp / Retrofit)
+
+This guide covers Flutter (Dart-layer) HTTP integration. If your Android project also uses `WebView`, `OkHttp`, or `Retrofit` on the **native layer** and you want that traffic to go through the SDK, the plugin bundles the matching native wrappers — but they are **off by default**. Enable the ones you need in your app's `android/gradle.properties`:
+
+```properties
+axsecurity.webview=true     # native WebView wrapper
+axsecurity.okhttp=true      # native OkHttp wrapper
+axsecurity.retrofit=true    # native Retrofit wrapper
+```
+
+With a flag set, the build pulls that wrapper's classes and runtime dependencies into your app. These flags affect the **Android native layer only**; the Dart networking above (http / Dio / WebSocket) needs none of them. See the "Bundled native wrappers" section of the plugin README for details.

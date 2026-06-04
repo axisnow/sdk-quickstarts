@@ -52,9 +52,9 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        String accessKeyId = "your accessKeyId from SDK Deployment";
-        String accessKeySecret = "your accessKeySecret from SDK Deployment";
-        String[] edgeNodes = {"edge IP"};
+        String accessKeyId = "<YOUR_ACCESS_KEY_ID>";
+        String accessKeySecret = "<YOUR_ACCESS_KEY_SECRET>";
+        String[] edgeNodes = {"<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>"};
 
         AXConfig config = new AXConfig.Builder()
             .accessKey(accessKeyId, accessKeySecret)
@@ -81,7 +81,7 @@ The `initialize` method returns `0` on success or a negative error code on failu
 | Parameter | Description |
 |-----------|-------------|
 | `AXConfig.Builder().accessKey(...)` | AccessKey ID and Secret (required), obtained from the console |
-| `AXConfig.Builder().edgeNodes(...)` | List of Edge node addresses (required); pass a `String[]`; at least 1, 2+ recommended |
+| `AXConfig.Builder().edgeNodes(...)` | EIP(s) or domain(s) pointing to the AxisNow Edge DoH service (required); pass a `String[]`; at least 1, 2+ recommended |
 | `AXConfig.Builder().dns(...)` | DNS configuration (optional); construct via `AXConfig.DnsConfig.Builder`. Whitelist domains for EdgeDoH via `edgeDohResolveDomains(String...)`; exempt specific domains via `edgeDohBypassDomains(String...)` (bypass takes priority over whitelist). Both accept varargs or a `String[]`. Patterns are exact or `*.suffix` wildcards. **Without a whitelist, all domains resolve via the system DNS** — explicitly add domains you want to protect via EdgeDoH. |
 
 For full parameter semantics, constraints, and default behavior, see Appendix A of the integration guide.

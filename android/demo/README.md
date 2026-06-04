@@ -52,9 +52,9 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        String accessKeyId = "your accessKeyId from SDK Deployment";
-        String accessKeySecret = "your accessKeySecret from SDK Deployment";
-        String[] edgeNodes = {"edge IP"};
+        String accessKeyId = "<YOUR_ACCESS_KEY_ID>";
+        String accessKeySecret = "<YOUR_ACCESS_KEY_SECRET>";
+        String[] edgeNodes = {"<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>"};
 
         AXConfig config = new AXConfig.Builder()
             .accessKey(accessKeyId, accessKeySecret)
@@ -81,7 +81,7 @@ public class MyApplication extends Application {
 | 参数 | 说明 |
 |------|------|
 | `AXConfig.Builder().accessKey(...)` | AccessKey ID 与 Secret（必填），从控制台获取 |
-| `AXConfig.Builder().edgeNodes(...)` | Edge 节点地址列表（必填），传入 `String[]`，至少 1 个，推荐 2+ |
+| `AXConfig.Builder().edgeNodes(...)` | 指向 AxisNow Edge DoH 服务的 EIP 或域名（必填），传入 `String[]`，至少 1 个，推荐 2+ |
 | `AXConfig.Builder().dns(...)` | DNS 配置（可选），通过 `AXConfig.DnsConfig.Builder` 构造。通过 `edgeDohResolveDomains(String...)` 加入 EdgeDoH 白名单；通过 `edgeDohBypassDomains(String...)` 为白名单中的域名豁免（bypass 优先于 resolve）。两者均接受可变参数或 `String[]`。匹配规则为精确域名或 `*.suffix` 通配。**未配置白名单时所有域名走系统 DNS**，需要 EdgeDoH 防护的域名请显式加入。 |
 
 完整参数语义、约束与默认行为见接入指南附录 A。

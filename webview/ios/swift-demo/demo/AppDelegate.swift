@@ -16,24 +16,26 @@ import UIKit
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_: UIApplication,
-                     didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+                     didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
+    {
         // *** UNCOMMENT THE LINES BELOW FOR SDK ***
         // let config = AXConfig()
-        // config.accessKeyID = "your accessKeyID of SDK Deployment"
-        // config.accessKeySecret = "your accessKeySecret of SDK Deployment"
-        // config.edgeNodes = ["your edge IP or domain"]
+        // config.accessKeyID = "<YOUR_ACCESS_KEY_ID>"
+        // config.accessKeySecret = "<YOUR_ACCESS_KEY_SECRET>"
+        // config.edgeNodes = ["<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>"]
         //
         // let r = AXService.initialize(config)
         // if r != 0 {
         //     NSLog("[demo] AXService initialize failed: \(r)")
         // }
 
-        return true
+        true
     }
 
     func application(_: UIApplication,
                      configurationForConnecting connectingSceneSession: UISceneSession,
-                     options _: UIScene.ConnectionOptions) -> UISceneConfiguration {
+                     options _: UIScene.ConnectionOptions) -> UISceneConfiguration
+    {
         UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
     }
 }

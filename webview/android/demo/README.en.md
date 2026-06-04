@@ -22,21 +22,42 @@ This page lists every integration step; a runnable minimal example is provided i
 
 ## Add the SDK dependency
 
-Drop the core SDK package `axsecurity-android-sdk.aar` into the wrapper module's `webview/libs/`
-(injected at build time, never committed) and add this wrapper module as a dependency (a Maven
-coordinate for releases):
+The release bundle `axsecurity-android-webview-<version>.zip` contains two AARs: the core SDK
+`axsecurity-android-sdk.aar` and the WebView wrapper `axsecurity-android-webview.aar` (a thin
+wrapper carrying no `.so`). Drop **both** AARs into your app module's `libs/`:
 
 ```
-webview/
+app/
 └── libs/
-    └── axsecurity-android-sdk.aar
+    ├── axsecurity-android-sdk.aar       # core SDK
+    └── axsecurity-android-webview.aar   # WebView wrapper
 ```
 
-## Manifest changes
+And reference them in your app module's `build.gradle`:
 
-The wrapper module bundles `androidx.webkit:webkit:1.11.0` and an `android.permission.INTERNET`
-declaration that merge into the host app manifest, so the **host needs no extra `AndroidManifest.xml`
-changes**.
+```groovy
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.aar'])
+}
+```
+
+> These AARs are consumed as local files and **do not carry transitive dependencies**, so
+> `androidx.webkit` must be added explicitly in the host project — see the next section.
+
+## Dependency and manifest
+
+The wrapper uses `androidx.webkit` to apply a process-wide proxy override to the WebView. Because
+the AARs from the previous section are consumed as local files and **do not carry transitive
+dependencies**, you must add this dependency explicitly in your app module's `build.gradle`
+(minimum 1.4.0; any newer 1.x works), otherwise you will hit a `NoClassDefFoundError` for
+`ProxyController` at runtime:
+
+```groovy
+implementation 'androidx.webkit:webkit:1.4.0'
+```
+
+The `android.permission.INTERNET` declaration lives in the wrapper AAR's own manifest and merges
+into the host app manifest automatically, so the **host needs no `AndroidManifest.xml` changes**.
 
 Note: the minimum supported Android SDK version is 21 (Android 5.0).
 
@@ -58,9 +79,9 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        String accessKeyId = "your accessKeyId from SDK Deployment";
-        String accessKeySecret = "your accessKeySecret from SDK Deployment";
-        String[] edgeNodes = {"edge IP"};
+        String accessKeyId = "<YOUR_ACCESS_KEY_ID>";
+        String accessKeySecret = "<YOUR_ACCESS_KEY_SECRET>";
+        String[] edgeNodes = {"<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>"};
 
         AXConfig config = new AXConfig.Builder()
             .accessKey(accessKeyId, accessKeySecret)
@@ -88,7 +109,7 @@ public class MyApplication extends Application {
 | Parameter | Description |
 |-----------|-------------|
 | `AXConfig.Builder().accessKey(...)` | AccessKey ID and Secret (required), obtained from the console |
-| `AXConfig.Builder().edgeNodes(...)` | Edge node address list (required), a `String[]`, at least 1, 2+ recommended |
+| `AXConfig.Builder().edgeNodes(...)` | EIP(s) or domain(s) pointing to the AxisNow Edge DoH service (required), a `String[]`, at least 1, 2+ recommended |
 | `AXConfig.Builder().dns(...)` | DNS config (optional), built via `AXConfig.DnsConfig.Builder`. Use `edgeDohResolveDomains(String...)` to add the EdgeDoH allowlist; use `edgeDohBypassDomains(String...)` to exempt allowlisted domains (bypass takes precedence over resolve). Matching is by exact domain or `*.suffix` wildcard. **With no allowlist configured, all domains use system DNS** — add the domains that need EdgeDoH protection explicitly. |
 
 For full parameter semantics, constraints, and defaults, see Appendix A of the integration guide.

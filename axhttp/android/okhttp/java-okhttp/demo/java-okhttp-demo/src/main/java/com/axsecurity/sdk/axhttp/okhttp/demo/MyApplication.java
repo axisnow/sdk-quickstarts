@@ -12,9 +12,9 @@ public class MyApplication extends Application {
         super.onCreate();
         // *** UNCOMMENT THE LINE BELOW FOR SDK ***
         /*
-        String accessKeyId = "your accessKeyId from SDK Deployment";
-        String accessKeySecret = "your accessKeySecret from SDK Deployment";
-        String[] edgeNodes = { "edge IP" };
+        String accessKeyId = "<YOUR_ACCESS_KEY_ID>";
+        String accessKeySecret = "<YOUR_ACCESS_KEY_SECRET>";
+        String[] edgeNodes = { "<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>" };
         AXConfig config = new AXConfig.Builder()
             .accessKey(accessKeyId, accessKeySecret)
             .edgeNodes(edgeNodes)
