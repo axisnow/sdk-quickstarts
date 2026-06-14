@@ -59,7 +59,23 @@ implementation 'androidx.webkit:webkit:1.4.0'
 The `android.permission.INTERNET` declaration lives in the wrapper AAR's own manifest and merges
 into the host app manifest automatically, so the **host needs no `AndroidManifest.xml` changes**.
 
-Note: the minimum supported Android SDK version is 21 (Android 5.0).
+### Device requirements
+
+Two separate requirements — note the distinction:
+
+- **Running the SDK**: minimum Android SDK version 21 (Android 5.0).
+- **Proxying WebView traffic**: the device's WebView implementation must be **Chromium 68 or
+  newer** (the release that introduced `PROXY_OVERRIDE`). This is gated on the WebView
+  *component* version, not the OS version:
+  - **Android 10 and above**: the factory WebView already qualifies;
+  - **Android 7–9**: the factory version does not (7.x ships ~M51, 8.x ~M58–61, 9 ~M66–68
+    depending on the image), so the device must have updated WebView/Chrome since — devices
+    with the Play Store normally have; GMS-less devices that never update are the main risk;
+  - To check: `adb shell dumpsys webviewupdate` shows the current WebView provider and version
+    (on Android 7.x Chrome acts as the WebView).
+
+On unsupported devices `installOnWebView` returns `-401` and falls back to direct (the page
+still loads, just not through the SDK) — see "Error handling" below.
 
 ## Initialize AXService
 
@@ -178,7 +194,7 @@ match the unified SDK error-code table:
 | `0` | Success, routed through the SDK proxy | — |
 | `-2` | Invalid argument (`webView` was null) | Pass a valid WebView |
 | `-101` | SDK not initialized / local proxy unavailable | Confirm `AXService.initialize(...)` returned `0`, then call again (re-callable) |
-| `-401` | Device WebView lacks `PROXY_OVERRIDE` | Update the system WebView component; devices that cannot update fall back to direct |
+| `-401` | Device WebView lacks `PROXY_OVERRIDE` (WebView < Chromium 68, see "Device requirements" above) | Update the system WebView/Chrome component; devices that cannot update fall back to direct |
 
 ## Verifying integration
 
@@ -189,8 +205,9 @@ with the expected DNS and tunnel state. See the integration guide §4.4.
 ## Known limitations
 
 - **Tied to WebView version, not OS version**: `PROXY_OVERRIDE` follows the independently-updatable
-  WebView component, not the system API level. The rare device that cannot update WebView (no GMS /
-  frozen) falls back to direct.
+  WebView component (Chromium 68+ required; Android 10+ factory images qualify — see "Device
+  requirements" above), not the system API level. The rare device that cannot update WebView (no
+  GMS / frozen) falls back to direct.
 - **Process-wide**: once enabled it affects every WebView in the app; it cannot target a single
   instance.
 - **Hybrid frameworks**: Cordova / Capacitor / React Native / Flutter own their `WebViewClient`, so

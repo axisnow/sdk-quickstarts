@@ -41,7 +41,17 @@ implementation 'androidx.webkit:webkit:1.4.0'
 
 `android.permission.INTERNET` 权限声明在封装 AAR 自带的清单中，会自动合并到宿主 App 清单，**宿主无需修改 `AndroidManifest.xml`**。
 
-注意：SDK 支持的最低 Android SDK 版本为 21（Android 5.0）。
+### 设备要求
+
+两个维度的要求，注意区分：
+
+- **SDK 运行**：最低 Android SDK 版本 21（Android 5.0）。
+- **WebView 代理生效**：设备的 WebView 实现 ≥ **Chromium 68**（`PROXY_OVERRIDE` 能力自该版本引入）。这是按「WebView 组件版本」而非「OS 版本」判定的：
+  - **Android 10 及以上**：出厂 WebView 即满足；
+  - **Android 7–9**：出厂版本不满足（7.x 出厂约 M51、8.x 约 M58–61、9 约 M66–68 视批次），需设备更新过 WebView/Chrome（有 Play Store 的设备通常已自动更新；无 GMS 且长期未更新的设备是主要风险面）；
+  - 确认命令：`adb shell dumpsys webviewupdate`，查看当前 WebView 提供者及版本（Android 7.x 上由 Chrome 充当 WebView）。
+
+设备不满足时 `installOnWebView` 返回 `-401` 并自动降级直连（页面照常加载、不经 SDK），详见下方「错误处理」。
 
 ## 初始化 AXService
 
@@ -132,7 +142,7 @@ AXWebViewService.load(webView, url);
 | `0` | 成功，已走 SDK 代理 | — |
 | `-2` | 参数非法（`webView` 为 null） | 传入有效的 WebView |
 | `-101` | SDK 未初始化 / 本地代理不可用 | 确认 `AXService.initialize(...)` 返回 `0` 后再调一次（可重复调用） |
-| `-401` | 设备 WebView 不支持 `PROXY_OVERRIDE` | 升级系统 WebView 组件；无法升级的设备降级直连 |
+| `-401` | 设备 WebView 不支持 `PROXY_OVERRIDE`（WebView < Chromium 68，见上方「设备要求」） | 升级系统 WebView/Chrome 组件；无法升级的设备降级直连 |
 
 ## 验证接入是否成功
 
@@ -140,7 +150,7 @@ AXWebViewService.load(webView, url);
 
 ## 已知限制
 
-- **依赖 WebView 版本而非系统版本**：`PROXY_OVERRIDE` 跟随可独立升级的 WebView 组件，而非系统 API level。极少数无法更新 WebView 的设备（无 GMS / 被冻结）会降级直连。
+- **依赖 WebView 版本而非系统版本**：`PROXY_OVERRIDE` 跟随可独立升级的 WebView 组件（需 ≥ Chromium 68，Android 10+ 出厂即满足，见上方「设备要求」），而非系统 API level。极少数无法更新 WebView 的设备（无 GMS / 被冻结）会降级直连。
 - **进程级全局**：启用后影响 App 内所有 WebView，无法只对单个实例生效。
 - **混合框架**：Cordova / Capacitor / React Native / Flutter 的 `WebViewClient` 由框架持有、用不了 `installOnWebView`，一期暂不支持。
 - **请求签名 / 改写头部**：一期不提供。代理在 HTTPS 下是 CONNECT 隧道，改不了请求头；该能力规划在后续版本，且完全是封装库内部的增量改动——接入代码（仍是 `installOnWebView`）无需改动，能力配置统一走 `AXService.initialize(...)`。
