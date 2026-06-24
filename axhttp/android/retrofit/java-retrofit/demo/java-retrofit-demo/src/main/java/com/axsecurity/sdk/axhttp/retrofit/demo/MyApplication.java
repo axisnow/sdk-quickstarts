@@ -10,7 +10,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        // *** COMMENT THE LINE BELOW FOR STEP 1***
+        // *** UNCOMMENT THE LINE BELOW FOR SDK ***
         /*
         String accessKeyId = "<YOUR_ACCESS_KEY_ID>";
         String accessKeySecret = "<YOUR_ACCESS_KEY_SECRET>";

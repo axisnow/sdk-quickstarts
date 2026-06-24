@@ -6,7 +6,7 @@
 //
 
 #import "ViewController.h"
-// *** UNCOMMENT THE LINES BELOW FOR AXNSURLSession ***
+// *** UNCOMMENT THE LINES BELOW FOR SDK ***
 // #import <AXSecurity/axsecurity.h>
 // #import <AXSecurityNSURLSession/AXNSURLSessionHeader.h>
 
@@ -26,7 +26,7 @@ NSString* helloEndpoint = @"https://example.com";
 
     NSString* hostWithPort = nil;
 
-    // *** UNCOMMENT THE LINES BELOW FOR AXNSURLSession ***
+    // *** UNCOMMENT THE LINES BELOW FOR SDK ***
     // NSString* accessKeyID=@"<YOUR_ACCESS_KEY_ID>";
     // NSString* accessKeySecret=@"<YOUR_ACCESS_KEY_SECRET>";
     // AXConfig *config = [[AXConfig alloc] init];
@@ -48,10 +48,10 @@ NSString* helloEndpoint = @"https://example.com";
     cfg.timeoutIntervalForRequest = 10;
     cfg.timeoutIntervalForResource = 10;
 
-    // *** UNCOMMENT THE LINE BELOW FOR AXNSURLSession ***
+    // *** UNCOMMENT THE LINE BELOW FOR SDK ***
     // defaultSession = [AXNSURLSession sessionWithConfiguration: cfg];
 
-    // *** COMMENT THE LINE BELOW FOR AXNSURLSession ***
+    // *** COMMENT THE LINE BELOW FOR SDK ***
     defaultSession = [NSURLSession sessionWithConfiguration:cfg];
 
     _textField = [[UITextField alloc] init];

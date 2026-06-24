@@ -2,7 +2,7 @@ package com.axsecurity.sdk.axhttp.httpsurlconn.demo;
 
 import android.app.Application;
 
-// *** UNCOMMENT THE LINE BELOW STEP 1***
+// *** UNCOMMENT THE LINE BELOW FOR SDK ***
 //import com.axsecurity.sdk.base.AXConfig;
 //import com.axsecurity.sdk.service.AXService;
 
@@ -11,7 +11,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        // *** UNCOMMENT THE LINE BELOW STEP 1***
+        // *** UNCOMMENT THE LINE BELOW FOR SDK ***
         /*
         String accessKeyId = "<YOUR_ACCESS_KEY_ID>";
         String accessKeySecret = "<YOUR_ACCESS_KEY_SECRET>";
@@ -25,6 +25,6 @@ public class MyApplication extends Application {
         } else {
             //TODO
         }
-        * */
+        */
     }
 }

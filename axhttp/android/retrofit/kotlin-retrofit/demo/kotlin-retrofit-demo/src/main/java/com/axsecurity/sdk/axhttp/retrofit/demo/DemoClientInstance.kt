@@ -20,7 +20,7 @@ object DemoClientInstance {
             return retrofit
         }
 
-    // *** UNCOMMENT THE LINES BELOW FOR AXIS ***
+    // *** UNCOMMENT THE LINES BELOW FOR SDK ***
 //    private var retrofit: Retrofit? = null
 //    @JvmStatic
 //    val retrofitInstance: Retrofit?

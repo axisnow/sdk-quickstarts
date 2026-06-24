@@ -23,7 +23,10 @@ public class MyApplication extends Application {
         //     .accessKey(accessKeyId, accessKeySecret)
         //     .edgeNodes(edgeNodes)
         //     .dns(new AXConfig.DnsConfig.Builder()
-        //         .edgeDohResolveDomains("*.example.com")
+        //         .edgeDohResolveDomains("<YOUR_DOMAIN>")
+        //         .build())
+        //     .proxy(new AXConfig.ProxyConfig.Builder()
+        //         .secureProxyEnabled(true)
         //         .build())
         //     .build();
         //

@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="axis_proxy_plugin_example"
+        android:label="AX Flutter Demo"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

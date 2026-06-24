@@ -1,4 +1,4 @@
-package com.libappsdk.axis_proxy_plugin_example;
+package com.axsecurity.sdk.flutter.demo;
 
 import io.flutter.embedding.android.FlutterActivity;
 

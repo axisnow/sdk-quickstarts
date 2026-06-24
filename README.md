@@ -21,6 +21,7 @@
 | iOS WebView (Objective-C) | [./webview/ios/demo](./webview/ios/demo/) |
 | iOS WebView (Swift) | [./webview/ios/swift-demo](./webview/ios/swift-demo/) |
 | Flutter | [./flutter/demo](./flutter/demo/) |
+| Flutter WebView | [./flutter/webview-demo](./flutter/webview-demo/) |
 | Unity | [./unity/demo](./unity/demo/) |
 
 ## License

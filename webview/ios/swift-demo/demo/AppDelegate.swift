@@ -24,6 +24,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // config.accessKeySecret = "<YOUR_ACCESS_KEY_SECRET>"
         // config.edgeNodes = ["<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>"]
         //
+        // let dns = AXDNSConfig()
+        // dns.edgeDohResolveDomains = ["<YOUR_DOMAIN>"]
+        // config.dns = dns
+        //
+        // let proxy = AXProxyConfig()
+        // proxy.secureProxyEnabled = true
+        // config.proxy = proxy
+        //
         // let r = AXService.initialize(config)
         // if r != 0 {
         //     NSLog("[demo] AXService initialize failed: \(r)")

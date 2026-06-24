@@ -51,7 +51,7 @@
 }
 
 - (void)sendHTTPRequest {
-    NSString *urlString = @"https://your.server.domain/your/path";
+    NSString *urlString = @"https://example.com";
 
     // *** COMMENT THE LINE BELOW FOR SDK ***
     NSURLSessionConfiguration *cfg = [NSURLSessionConfiguration defaultSessionConfiguration];

@@ -29,14 +29,15 @@ public class MyApplication extends Application {
         // String accessKeyId = "<YOUR_ACCESS_KEY_ID>";
         // String accessKeySecret = "<YOUR_ACCESS_KEY_SECRET>";
         // String[] edgeNodes = { "<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>" };
-        // AXConfig.DnsConfig dns = new AXConfig.DnsConfig.Builder()
-        //         .edgeDohResolveDomains("*.example.com")
-        //         .build();
         // AXConfig config = new AXConfig.Builder()
         //         .accessKey(accessKeyId, accessKeySecret)
         //         .edgeNodes(edgeNodes)
-        //         .dns(dns)
-        //         .proxy(new AXConfig.ProxyConfig.Builder().secureProxyEnabled(true).build())
+        //         .dns(new AXConfig.DnsConfig.Builder()
+        //                 .edgeDohResolveDomains("<YOUR_DOMAIN>")
+        //                 .build())
+        //         .proxy(new AXConfig.ProxyConfig.Builder()
+        //                 .secureProxyEnabled(true)
+        //                 .build())
         //         .build();
         // if (AXService.initialize(getApplicationContext(), config) != 0) {
         //     Log.e("AXWebViewDemo", "AXService.initialize failed");

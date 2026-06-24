@@ -60,7 +60,10 @@ public class MyApplication extends Application {
             .accessKey(accessKeyId, accessKeySecret)
             .edgeNodes(edgeNodes)
             .dns(new AXConfig.DnsConfig.Builder()
-                .edgeDohResolveDomains("*.example.com")
+                .edgeDohResolveDomains("<YOUR_DOMAIN>")
+                .build())
+            .proxy(new AXConfig.ProxyConfig.Builder()
+                .secureProxyEnabled(true)
                 .build())
             .build();
 
@@ -83,6 +86,7 @@ public class MyApplication extends Application {
 | `AXConfig.Builder().accessKey(...)` | AccessKey ID 与 Secret（必填），从控制台获取 |
 | `AXConfig.Builder().edgeNodes(...)` | 指向 AxisNow Edge DoH 服务的 EIP 或域名（必填），传入 `String[]`，至少 1 个，推荐 2+ |
 | `AXConfig.Builder().dns(...)` | DNS 配置（可选），通过 `AXConfig.DnsConfig.Builder` 构造。通过 `edgeDohResolveDomains(String...)` 加入 EdgeDoH 白名单；通过 `edgeDohBypassDomains(String...)` 为白名单中的域名豁免（bypass 优先于 resolve）。两者均接受可变参数或 `String[]`。匹配规则为精确域名或 `*.suffix` 通配。**未配置白名单时所有域名走系统 DNS**，需要 EdgeDoH 防护的域名请显式加入。 |
+| `AXConfig.Builder().proxy(...)` | 代理配置（可选），通过 `AXConfig.ProxyConfig.Builder` 构造。`secureProxyEnabled(true)` 启用加密隧道，显式传 `false` 可关闭。 |
 
 完整参数语义、约束与默认行为见接入指南附录 A。
 

@@ -7,8 +7,8 @@ import UIKit
 class ViewController: UIViewController {
     private var logView: UITextView!
 
-    private let httpURL = "https://your.server.domain/path" // your HTTP endpoint
-    private let wsURL = "wss://your.server.domain/ws" // your WebSocket endpoint
+    private let httpURL = "https://example.com" // your HTTP endpoint
+    private let wsURL = "wss://echo.websocket.org" // your WebSocket endpoint
 
     /// WebSocket connection (Starscream).
     private var webSocket: WebSocket?
@@ -22,13 +22,13 @@ class ViewController: UIViewController {
         // config.accessKeySecret = "<YOUR_ACCESS_KEY_SECRET>"
         // config.edgeNodes       = ["<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>"]
         //
+        // let dns = AXDNSConfig()
+        // dns.edgeDohResolveDomains = ["<YOUR_DOMAIN>"]
+        // config.dns = dns
+        //
         // let proxy = AXProxyConfig()
         // proxy.secureProxyEnabled = true
         // config.proxy = proxy
-        //
-        // let dns = AXDNSConfig()
-        // dns.edgeDohResolveDomains = ["*.example.com"]
-        // config.dns = dns
         //
         // let r = AXService.initialize(config)
         // if r != 0 {

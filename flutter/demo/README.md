@@ -59,6 +59,8 @@ try {
         accessKeyId: '<YOUR_ACCESS_KEY_ID>',
         accessKeySecret: '<YOUR_ACCESS_KEY_SECRET>',
         edgeNodes: ['<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>'],
+        dns: AxDnsConfig(edgeDohResolveDomains: ['<YOUR_DOMAIN>']),
+        proxy: AxProxyConfig(secureProxyEnabled: true),
     );
 
     result = await AxService.initialize(config: cfg);
@@ -92,6 +94,7 @@ if (result == 0) {
 | `AxConfig(accessKeySecret: ...)` | AccessKey Secret（必填），从控制台获取 |
 | `AxConfig(edgeNodes: ...)` | 指向 AxisNow Edge DoH 服务的 EIP 或域名（必填），`List<String>`，至少 1 个，推荐 2+ |
 | `AxConfig(dns: ...)` | DNS 配置（可选），通过 `AxDnsConfig` 构造。传入 `edgeDohResolveDomains: [...]` 将主机加入 EdgeDoH 白名单；传入 `edgeDohBypassDomains: [...]` 为白名单中的特定主机豁免（bypass 优先于 resolve）。匹配规则为精确域名或 `*.suffix` 通配。**未配置白名单时所有主机走系统 DNS**，需要 EdgeDoH 防护的主机请显式加入。 |
+| `AxConfig(proxy: ...)` | 代理配置（可选），通过 `AxProxyConfig` 构造。`secureProxyEnabled: true` 启用加密隧道，显式传 `false` 可关闭。 |
 
 完整参数语义、约束与默认行为见接入指南附录 A。
 

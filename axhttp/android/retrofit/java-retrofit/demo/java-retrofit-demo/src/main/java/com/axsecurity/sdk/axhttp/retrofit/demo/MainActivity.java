@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-// *** UNCOMMENT THE LINE BELOW FOR AXHTTPService ***
+// *** UNCOMMENT THE LINE BELOW FOR SDK ***
 //import com.axsecurity.sdk.axhttp.retrofit.AXHTTPService;
 
 import java.io.IOException;
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         OkHttpClientBuilder.readTimeout(60, TimeUnit.SECONDS);
         OkHttpClientBuilder.writeTimeout(60, TimeUnit.SECONDS);
 
-        // *** UNCOMMENT THE LINE BELOW STEP 2***
+        // *** UNCOMMENT THE LINE BELOW FOR SDK ***
         // AXHTTPService.setOkHttpClientBuilder(OkHttpClientBuilder);
 
         // make a new Request

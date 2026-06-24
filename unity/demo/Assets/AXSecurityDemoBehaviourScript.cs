@@ -42,11 +42,9 @@ public class AXSecurityDemoBehaviourScript : MonoBehaviour
                     AccessKeyID = "<YOUR_ACCESS_KEY_ID>",
                     AccessKeySecret = "<YOUR_ACCESS_KEY_SECRET>",
                     EdgeNodes = new string[] { "<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>" },
-                    // Without a whitelist, all hosts resolve via the OS DNS.
-                    // Add domains here that should resolve via EdgeDoH.
                     Dns = new DnsConfig
                     {
-                        EdgeDohResolveDomains = new string[] { "*.example.com" }
+                        EdgeDohResolveDomains = new string[] { "<YOUR_DOMAIN>" }
                     }
                 };
                 var res = AXService.GetInsance().Initialize(config);

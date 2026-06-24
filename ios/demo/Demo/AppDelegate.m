@@ -12,13 +12,13 @@
     // config.accessKeySecret = @"<YOUR_ACCESS_KEY_SECRET>";
     // config.edgeNodes       = @[ @"<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>" ];
     //
+    // AXDNSConfig *dns = [[AXDNSConfig alloc] init];
+    // dns.edgeDohResolveDomains = @[ @"<YOUR_DOMAIN>" ];
+    // config.dns = dns;
+    //
     // AXProxyConfig *proxy = [[AXProxyConfig alloc] init];
     // proxy.secureProxyEnabled = YES;
     // config.proxy = proxy;
-    //
-    // AXDNSConfig *dns = [[AXDNSConfig alloc] init];
-    // dns.edgeDohResolveDomains = @[ @"*.example.com" ];
-    // config.dns = dns;
     //
     // int r = [AXService initialize:config];
     // if (r != 0) {

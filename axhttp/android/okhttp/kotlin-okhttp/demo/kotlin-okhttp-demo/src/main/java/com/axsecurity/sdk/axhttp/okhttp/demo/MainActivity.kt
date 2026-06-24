@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
     // Using your request url here
-    private val  url: String = "https://example.io"
+    private val  url: String = "https://example.com"
     private lateinit var textView: TextView
     private lateinit var apiButton: Button
     private lateinit var activity: Activity

@@ -19,7 +19,8 @@ void main() async {
   //       accessKeyId: '<YOUR_ACCESS_KEY_ID>',
   //       accessKeySecret: '<YOUR_ACCESS_KEY_SECRET>',
   //       edgeNodes: ['<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>'],
-  //       dns: AxDnsConfig(edgeDohResolveDomains: ["*.example.com"]));
+  //       dns: AxDnsConfig(edgeDohResolveDomains: ['<YOUR_DOMAIN>']),
+  //       proxy: AxProxyConfig(secureProxyEnabled: true));
   //   result = await AxService.initialize(config: cfg);
   // } on PlatformException {
   //   result = -1;

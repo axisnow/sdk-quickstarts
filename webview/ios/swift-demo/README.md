@@ -50,6 +50,14 @@ func application(_ application: UIApplication,
     config.accessKeySecret = "<YOUR_ACCESS_KEY_SECRET>"
     config.edgeNodes = ["<AXISNOW_EDGE_DOH_EIP_OR_DOMAIN>"]
 
+    let dns = AXDNSConfig()
+    dns.edgeDohResolveDomains = ["<YOUR_DOMAIN>"]
+    config.dns = dns
+
+    let proxy = AXProxyConfig()
+    proxy.secureProxyEnabled = true
+    config.proxy = proxy
+
     let r = AXService.initialize(config)
     if r != 0 {
         NSLog("SDK 初始化失败: \(r)")
@@ -69,8 +77,10 @@ func application(_ application: UIApplication,
 | `AXConfig.accessKeyID` | AccessKey ID（必填），从控制台获取 |
 | `AXConfig.accessKeySecret` | AccessKey Secret（必填），从控制台获取 |
 | `AXConfig.edgeNodes` | 指向 AxisNow Edge DoH 服务的 EIP 或域名（必填），`[String]`，至少 1 个，推荐 2+ |
+| `AXConfig.dns` | DNS 配置（可选），通过 `AXDNSConfig` 构造。给 `edgeDohResolveDomains` 赋数组加入 EdgeDoH 白名单；给 `edgeDohBypassDomains` 赋数组为白名单中的主机豁免（bypass 优先于 resolve）。匹配规则为精确域名或 `*.suffix` 通配。**未配置白名单时所有主机走系统 DNS**，需要 EdgeDoH 防护的主机请显式加入。 |
+| `AXConfig.proxy` | 代理配置（可选），通过 `AXProxyConfig` 构造。`secureProxyEnabled = true` 启用加密隧道，显式设 `false` 可关闭。 |
 
-本 demo 仅使用上述最小必填字段。`AXConfig` 的完整选项（DNS 配置、加密隧道开关等）以及参数语义详见 SDK 接入指南。
+完整参数语义、约束与默认行为见接入指南附录 A。
 
 ## 为 WebView 安装代理
 

@@ -24,6 +24,6 @@ public class MyApplication extends Application {
         } else {
             //TODO
         }
-        * */
+        */
     }
 }

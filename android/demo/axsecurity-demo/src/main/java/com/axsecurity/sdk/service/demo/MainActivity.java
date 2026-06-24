@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends AppCompatActivity {
     private TextView m_textView;
-    private final String mDemoURL = "https://your.server.domain/"; // target URL for HTTP proxy demo
+    private final String mDemoURL = "https://example.com"; // target URL for HTTP proxy demo
 
     @SuppressLint("SetTextI18n")
     @Override
